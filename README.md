@@ -64,6 +64,10 @@ TODO
 
 TODO
 
+#### CEF distribution
+
+CEF distribuatables used by this plugin are not stored in a github repository, but they're stored on a self-hosted gitlab instance. [Link to CEF storage](https://lauch.10d.space/uranium/cef-storage)
+
 ## Test project (UraniumDeposit)
 
 This plugin is being developed inside its [official test project (UraniumDeposit)](https://github.com/microdee/UraniumDeposit). It's using [Nuke.Unreal](https://github.com/microdee/Nuke.Unreal) for automation. See the [README.md](https://github.com/microdee/UraniumDeposit/blob/main/README.md) there for further documentation.
