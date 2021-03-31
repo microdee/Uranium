@@ -1,6 +1,6 @@
 
 <p align="center">
-    <img src="Docs/ur_logo_atom_onlight.png"
+    <img src="Docs/ur_logo_atom_onlight_bgcircle.png"
         style="mix-blend-mode: difference;"
     />
 </p>

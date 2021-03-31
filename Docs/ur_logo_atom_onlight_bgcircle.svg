@@ -1,0 +1,124 @@
+﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="500" height="500" overflow="auto" viewBox="-1, -1, 2, 2" preserveAspectRatio="none" VVVVBackgroundColor="0;0;0;1">
+  <g transform="matrix(1, 0, 0, 1, 0, 0)">
+    <ellipse cx="none" cy="none" rx="0.945" ry="0.945" fill="#FFFFFF" stroke-width="0" stroke-opacity="0" transform="translate(0, 0) rotate(0, 0, 0)" />
+    <g transform="matrix(1, 0, 0, 1, 0, 0)">
+      <ellipse cx="none" cy="none" rx="0.4607143" ry="0.4607143" fill="#FFFFFF" stroke="#000000" fill-opacity="0.00093" stroke-width="0.015" transform="translate(0, 0) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.5321429" ry="0.5321429" fill="#FFFFFF" stroke="#000000" fill-opacity="0.00093" stroke-width="0.015" transform="translate(0, 0) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.6035714" ry="0.6035714" fill="#FFFFFF" stroke="#000000" fill-opacity="0.00093" stroke-width="0.015" transform="translate(0, 0) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.675" ry="0.675" fill="#FFFFFF" stroke="#000000" fill-opacity="0.00093" stroke-width="0.015" transform="translate(0, 0) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.7464285" ry="0.7464285" fill="#FFFFFF" stroke="#000000" fill-opacity="0.00093" stroke-width="0.015" transform="translate(0, 0) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.8178571" ry="0.8178571" fill="#FFFFFF" stroke="#000000" fill-opacity="0.00093" stroke-width="0.015" transform="translate(0, 0) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.8892857" ry="0.8892857" fill="#FFFFFF" stroke="#000000" fill-opacity="0.00093" stroke-width="0.015" transform="translate(0, 0) rotate(0, 0, 0)" />
+      <g transform="matrix(0.001105581, 0, 0, 0.001105581, -0.5522272, -0.4178305)">
+        <metadata id="metadata8">image/svg+xml</metadata>
+        <defs id="defs6">
+          <clipPath clipPathUnits="UserSpaceOnUse" id="clipPath22">
+            <path d="M0 1024 L1024 1024 L1024 0 L0 0 z" pathLength="0" id="path20" />
+          </clipPath>
+        </defs>
+        <g transform="matrix(1.333333, 0, 0, -1.333333, -184.4784, 1221.524)" id="g10">
+          <g id="g16">
+            <g clip-path="url(#clipPath22)" id="g18">
+              <g transform="translate(312.5538, 585.913)" id="g66">
+                <path d="M0 0 C0 0 -10.463 51.999 44.874 114.973 C100.216 177.945 141.737 200.844 186.581 212.772 C186.581 212.772 186.543 212.749 186.503 212.726 C186.56 212.741 186.617 212.757 186.673 212.772 C186.673 212.772 151.446 192.255 151.446 161.25 C151.446 152.25 152.881 146.066 154.869 141.935 C157.507 136.447 161.685 134.581 165.436 134.563 C168.597 134.545 170.447 135.844 174.446 137.397 L174.446 -30.52699 C174.446 -30.52699 174.879 -33.23399 177.309 -36.44199 C180.809 -41.05499 186.31 -46.68499 196.644 -46.74199 C214.273 -46.62899 236.446 -26.71599 236.446 -26.71599 L236.446 109.248 C236.446 123.08 226.547 139.778 216.057 145.507 C216.057 145.507 217.486 145.597 219.8 145.596 C226.726 145.598 241.584 144.806 249.863 138.481 C252.163 141.146 289.281 183.146 355.329 196.07 C355.329 196.07 355.317 196.057 355.297 196.033 C355.358 196.045 355.417 196.058 355.478 196.07 C355.478 196.07 318.946 153.054 307.496 131.722 C305.461 131.601 305.164 91.25101 305.503 50.93201 C305.832 12.01202 306.756 -26.88599 307.292 -29.57699 C307.292 -29.57699 311.19 -35.37099 321.116 -35.42099 C332.312 -35.47799 351.179 -28.22599 380.759 2.867008 L380.758 2.866008 L380.759 2.867008 C380.759 2.867008 379.979 1.096008 378.409 -2.040992 C369.932 -18.97899 338.434 -75.76199 282.4839 -108.766 L282.481 -108.763 C282.4789 -108.764 282.477 -108.765 282.476 -108.766 L246.1859 -78.07299 L245.2589 -77.29899 L205.6789 -119.266 C205.6789 -119.266 205.6559 -119.264 205.6189 -119.26 L205.6139 -119.266 C205.6139 -119.266 115.3819 -111.633 77.69494 -57.25099 C77.69494 -57.25099 77.76594 -57.27699 77.87294 -57.31599 C77.85694 -57.29399 77.84094 -57.27299 77.82594 -57.25099 C77.82594 -57.25099 83.53294 -59.47199 89.97395 -59.59299 C97.52094 -59.73099 105.4459 -56.97399 105.4459 -44.36399 L105.4459 83.48601 C105.4459 90.01501 100.9509 97.339 91.08395 97.311 C82.21 97.288 69.47 91.317 52.074 73.468 C15.34 35.783 0.085 0 0.085 0 C0.085 0 0.075 0.049 0.059 0.136 C0.023 0.052 0 0 0 0 M200.446 -216.757 C270.832 -216.757 337.006 -189.347 386.776 -139.577 C436.547 -89.806 463.956 -23.633 463.956 46.75301 C463.956 117.139 436.547 183.312 386.776 233.083 C337.006 282.853 270.832 310.263 200.446 310.263 C130.06 310.263 63.88699 282.853 14.116 233.083 C-35.654 183.312 -63.064 117.139 -63.064 46.75301 C-63.064 -23.633 -35.654 -89.806 14.116 -139.577 C63.887 -189.347 130.06 -216.757 200.446 -216.757" pathLength="0" fill="Black" id="path68" />
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-8.463184E-17, -0.4607143) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(2.821061E-17, 0.4607143) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-9.775305E-17, -0.5321429) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.3762818, -0.3762818) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.5321429, 0) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.3762818, 0.3762818) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(3.258435E-17, 0.5321429) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.3762818, 0.3762818) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.5321429, 6.51687E-17) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.3762818, -0.3762818) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-1.108743E-16, -0.6035714) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.2064336, -0.5671716) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.3879682, -0.4623625) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.5227082, -0.3017857) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.5944018, -0.1048091) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.5944018, 0.1048091) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.5227082, 0.3017857) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.3879682, 0.4623625) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.2064336, 0.5671716) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(3.695809E-17, 0.6035714) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.2064336, 0.5671716) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.3879682, 0.4623625) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.5227082, 0.3017857) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.5944018, 0.1048091) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.5944018, -0.1048091) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.5227082, -0.3017857) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.3879682, -0.4623625) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.2064336, -0.5671716) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-1.239955E-16, -0.675) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.131686, -0.66203) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.2583113, -0.6236187) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.3750099, -0.561242) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.4772971, -0.4772971) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.561242, -0.3750099) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.6236187, -0.2583113) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.66203, -0.131686) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.675, 0) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.66203, 0.131686) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.6236187, 0.2583113) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.561242, 0.3750099) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.4772971, 0.4772971) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.3750099, 0.561242) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.2583113, 0.6236187) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.131686, 0.66203) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(4.133183E-17, 0.675) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.131686, 0.66203) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.2583113, 0.6236187) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.3750099, 0.561242) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.4772971, 0.4772971) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.561242, 0.3750099) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.6236187, 0.2583113) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.66203, 0.131686) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.675, 8.266366E-17) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.66203, -0.131686) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.6236187, -0.2583113) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.561242, -0.3750099) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.4772971, -0.4772971) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.3750099, -0.561242) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.2583113, -0.6236187) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.131686, -0.66203) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-1.371167E-16, -0.7464285) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.2200137, -0.7132668) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.4204782, -0.6167282) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.5835813, -0.4653906) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.6948308, -0.272701) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.7443414, -0.05578068) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.7277141, 0.166096) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.6464261, 0.3732143) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.5077004, 0.5471709) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.3238632, 0.6725089) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.1112494, 0.7380916) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.1112494, 0.7380916) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.3238632, 0.6725089) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.5077004, 0.5471709) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.6464261, 0.3732143) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.7277141, 0.166096) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.7443414, -0.05578068) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.6948308, -0.272701) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.5835813, -0.4653906) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.4204782, -0.6167282) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.2200137, -0.7132668) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-1.502379E-16, -0.8178571) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.5257084, -0.6265149) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.8054321, -0.1420194) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.708285, 0.4089286) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(0.2797236, 0.7685343) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.2797236, 0.7685343) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.708285, 0.4089286) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.8054321, -0.1420194) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-0.5257084, -0.6265149) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(-1.633591E-16, -0.8892857) rotate(0, 0, 0)" />
+      <ellipse cx="none" cy="none" rx="0.025" ry="0.025" fill="#FFFFFF" stroke="#000000" stroke-width="0.015" transform="translate(5.445304E-17, 0.8892857) rotate(0, 0, 0)" />
+    </g>
+  </g>
+</svg>
