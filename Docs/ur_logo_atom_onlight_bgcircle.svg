@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="500" height="500" overflow="auto" viewBox="-1, -1, 2, 2" preserveAspectRatio="none" VVVVBackgroundColor="0;0;0;1">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="500" height="500" overflow="auto" viewBox="-1, -1, 2, 2" preserveAspectRatio="none" VVVVBackgroundColor="1;1;1;0">
   <g transform="matrix(1, 0, 0, 1, 0, 0)">
     <ellipse cx="none" cy="none" rx="0.945" ry="0.945" fill="#FFFFFF" stroke-width="0" stroke-opacity="0" transform="translate(0, 0) rotate(0, 0, 0)" />
     <g transform="matrix(1, 0, 0, 1, 0, 0)">
