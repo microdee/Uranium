@@ -1,9 +1,11 @@
 
-<img src="Docs/ur_logo_atom_ondark.png"
-    style="position:relative; left:50%; transform: translate(-50%, 0%); mix-blend-mode: difference;"
-/>
-<h1 style="text-align:center;"> Uranium</h1>
-<p style="text-align:center;">Fast and versatile implementation of CEF for Unreal Engine</p>
+<p align="center">
+    <img src="Docs/ur_logo_atom_ondark.png"
+        style="mix-blend-mode: difference;"
+    />
+</p>
+<h1 align="center"> Uranium</h1>
+<p align="center">Fast and versatile implementation of CEF for Unreal Engine</p>
 
 ## Features
 
