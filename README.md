@@ -66,7 +66,7 @@ TODO
 
 #### CEF distribution
 
-CEF distribuatables used by this plugin are not stored in a github repository, but they're stored on a self-hosted gitlab instance. [Link to CEF storage](https://lauch.10d.space/uranium/cef-storage)
+CEF distributables used by this plugin are not stored in a github repository, but they're stored on a self-hosted gitlab instance. [Link to CEF storage](https://lauch.10d.space/uranium/cef-storage)
 
 ## Test project (UraniumDeposit)
 
