@@ -3,16 +3,21 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
 project(UraniumCefProcess
-    VERSION 0.2.0
+    VERSION 0.3.0
     LANGUAGES CXX
 )
 
-option(URCP_IS_X64 "Is this an x64 build" ON)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(URCP_IS_X64 ON)
+else()
+    set(URCP_IS_X64 OFF)
+endif()
+
 set(URCP_CEF_VERSION "85.0.4183.121.ST" CACHE STRING "The target CEF distrib version, must match the CEF.* folder name.")
 
-set(URCP_CEF_ROOT ${CMAKE_SOURCE_DIR}/ThirdParty/CEF.${URCP_CEF_VERSION})
+set(URCP_CEF_ROOT ${CMAKE_SOURCE_DIR}/ThirdParty/CEF/${URCP_CEF_VERSION})
 set(URCP_SRC_ROOT ${CMAKE_SOURCE_DIR}/UraniumCefProcess)
-set(URCP_SHARED_SRC "${CMAKE_SOURCE_DIR}/Source/Uranium/Shared")
+set(URCP_SHARED_SRC "${CMAKE_SOURCE_DIR}/Uranium/Shared")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${URCP_CEF_ROOT}/cmake")
 
 set(CMAKE_CXX_STANDARD 20)

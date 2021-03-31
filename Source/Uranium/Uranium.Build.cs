@@ -103,15 +103,15 @@ public class Uranium : ModuleRules
 
         // Configure and determine folders
         var targetDir = Path.GetDirectoryName(Target.ProjectFile.FullName);
-        var cefInputDir = Path.GetFullPath(Path.Combine(PluginDirectory, "ThirdParty", "CEF." + cefVersion));
+        var cefInputDir = Path.GetFullPath(Path.Combine(PluginDirectory, "Source", "ThirdParty", "CEF", cefVersion));
         var cefOutputDir = Path.Combine(targetDir, "Binaries", Target.Platform.ToString());
-        var cefBuiltDir = Path.GetFullPath(Path.Combine(PluginDirectory, "out", "ue4", "x64-" + cefConfig));
+        var cefBuiltDir = Path.GetFullPath(Path.Combine(PluginDirectory, "Source", "out", "ue4", "x64-" + cefConfig));
         var cefResourceDir = Path.Combine(cefInputDir, "Resources");
         var cefBinDir = Path.Combine(cefInputDir, cefConfig);
         var cefIncludeDir = Path.Combine(cefInputDir, "include");
         var icudtlDatPath = Path.Combine(cefResourceDir, "icudtl.dat");
 
-        var cefSubProcSrcPath = Path.Combine(PluginDirectory, "UraniumCefProcess");
+        var cefSubProcSrcPath = Path.Combine(PluginDirectory, "Source", "UraniumCefProcess");
         var cefSubProcOutputPath = Path.Combine(cefOutputDir, "UraniumCefProcess.exe");
         var cefSubProcBuiltPath = Path.Combine(cefBuiltDir, "UraniumCefProcess.exe");
 
