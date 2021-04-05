@@ -1,3 +1,6 @@
+# WIP! UPLOAD IN PROGRESS!
+
+This project is currently in the process of open-sourcing and as such infrastructure around it (such as build automation) is still not ready yet. You can start experimenting but this is far from being an off-the-shelf solution yet.
 
 <p align="center">
     <img src="Docs/ur_logo_atom_onlight_bgcircle.png"
