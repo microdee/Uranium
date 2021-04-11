@@ -1,6 +1,7 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "SharedTexture/D3D12/D3D12LegacySharedTexture.h"
+#include "UeVersion.h"
 
 #include "Uranium.h"
 
@@ -27,12 +28,24 @@ ID3D12GraphicsCommandList* UD3D12LegacySharedTexture::GetRhiGfxCmdList(FRHIComma
 
 ID3D12Resource* UD3D12LegacySharedTexture::GetTargetTextureResource()
 {
+#if UE_VERSION >= MAKE_UE_VERSION(4, 26)
+    
+    if(!TargetTexture) return nullptr;
+    if (!TargetTexture->Resource) return nullptr;
+
+    auto RhiRes = TargetTexture->Resource->GetTexture2DRHI();
+    if (!RhiRes) return nullptr;
+    
+#else
+    
     if(!TargetTexture) return nullptr;
     auto TargetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
     if (!TargetRes) return nullptr;
 
     auto RhiRes = TargetRes->GetTexture2DRHI();
     if (!RhiRes) return nullptr;
+    
+#endif
 
     return static_cast<ID3D12Resource*>(RhiRes->GetNativeResource());
 }

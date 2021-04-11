@@ -29,11 +29,23 @@ ID3D12GraphicsCommandList* UD3D12SharedTexture::GetRhiGfxCmdList(FRHICommandList
 ID3D12Resource* UD3D12SharedTexture::GetTargetTextureResource()
 {
     if (!TargetTexture) return nullptr;
+    
+#if UE_VERSION >= MAKE_UE_VERSION(4, 26)
+        
+    if (!TargetTexture->Resource) return nullptr;
+
+    auto RhiRes = TargetTexture->Resource->GetTexture2DRHI();
+    if (!RhiRes) return nullptr;
+    
+#else
+
     auto TargetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
     if (!TargetRes) return nullptr;
 
     auto RhiRes = TargetRes->GetTexture2DRHI();
     if (!RhiRes) return nullptr;
+    
+#endif
 
     return static_cast<ID3D12Resource*>(RhiRes->GetNativeResource());
 }

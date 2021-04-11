@@ -1,12 +1,12 @@
 #pragma once
 
 #ifdef URANIUM_API
-#include "Public/CefIncludesStart.h"
+#include "CefIncludesStart.h"
 #endif
 #include "include/cef_app.h"
 
 #ifdef URANIUM_API
-#include "Public/CefIncludesEnd.h"
+#include "CefIncludesEnd.h"
 #endif
 
 #define CEFV8_UTILS_MAX_RECLEVEL 100

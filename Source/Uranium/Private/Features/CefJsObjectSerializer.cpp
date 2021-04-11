@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CefJsObjectSerializer.h"
+#include "Features/CefJsObjectSerializer.h"
 
 #include "Uranium.h"
 
@@ -116,6 +116,7 @@ FString GetValueOfStringProperty(FField* InField, const void* ValuePtr)
 {
     // ReSharper disable CppDeclarationHidesLocal
     // ReSharper disable CppLocalVariableMayBeConst
+#pragma warning( suppress : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
     if(auto Prop = CastField<FStrProperty>(InField))
     {
         return Prop->GetPropertyValue(ValuePtr);
@@ -134,6 +135,7 @@ FString GetValueOfStringProperty(FField* InField, const void* ValuePtr)
         auto Name = Prop->GetEnum()->GetNameByIndex(Val);
         return Name.ToString();
     }
+#pragma warning( default : 4456 )
     // ReSharper restore CppLocalVariableMayBeConst
     // ReSharper restore CppDeclarationHidesLocal
     
@@ -144,6 +146,7 @@ void SetValueOfStringProperty(FField* InField, void* ValuePtr, CefRefPtr<CefValu
 {
     // ReSharper disable CppDeclarationHidesLocal
     // ReSharper disable CppLocalVariableMayBeConst
+#pragma warning( suppress : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
     FString InputStr(Input->GetString().c_str());
     if(auto Prop = CastField<FStrProperty>(InField))
     {
@@ -163,6 +166,7 @@ void SetValueOfStringProperty(FField* InField, void* ValuePtr, CefRefPtr<CefValu
         int ValId = Prop->GetEnum()->GetIndexByName(FName(*InputStr));
         ValProp->SetIntPropertyValue(ValuePtr, static_cast<int64>(ValId));
     }
+#pragma warning( default : 4456 )
     // ReSharper restore CppLocalVariableMayBeConst
     // ReSharper restore CppDeclarationHidesLocal
 }
@@ -184,6 +188,7 @@ CefRefPtr<CefValue> FCefJsObjectSerializer::FieldToCefValue(
 
     // ReSharper disable CppDeclarationHidesLocal
     // ReSharper disable CppLocalVariableMayBeConst
+#pragma warning( suppress : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
     if(auto Prop = CastField<FBoolProperty>(InField))
     {
         Target->SetBool(Prop->GetPropertyValue(ValuePtr));
@@ -219,6 +224,7 @@ CefRefPtr<CefValue> FCefJsObjectSerializer::FieldToCefValue(
     {
         ArrayPropertyToCefValue(Target, Prop, ValuePtr, Traversal);
     }
+#pragma warning( default : 4456 )
     // ReSharper restore CppLocalVariableMayBeConst
     // ReSharper restore CppDeclarationHidesLocal
     
@@ -241,6 +247,7 @@ void FCefJsObjectSerializer::CefValueToField(
 
     // ReSharper disable CppDeclarationHidesLocal
     // ReSharper disable CppLocalVariableMayBeConst
+#pragma warning( suppress : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
     if(auto Prop = CastField<FBoolProperty>(InField))
     {
         Prop->SetPropertyValue(ValuePtr, Input->GetBool());
@@ -276,6 +283,7 @@ void FCefJsObjectSerializer::CefValueToField(
     {
         CefValueToArrayProperty(Prop, ValuePtr, Input, Traversal, Pins, RootObj);
     }
+#pragma warning( default : 4456 )
     // ReSharper restore CppLocalVariableMayBeConst
     // ReSharper restore CppDeclarationHidesLocal
 }

@@ -6,7 +6,7 @@
 
 #include <dxgiformat.h>
 
-#include "Shared/CefCompat.h"
+#include "CefCompat.h"
 
 #include "SharedTextureInterface.generated.h"
 

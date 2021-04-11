@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Object.h"
+#include "CoreUObject.h"
 #include "UrJsObjectInterop.generated.h"
 
 /**

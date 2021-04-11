@@ -40,6 +40,11 @@ public class Uranium : ModuleRules
 
         PublicDefinitions.AddRange(new string[] { });
 
+        PublicIncludePaths.AddRange(new string[]
+        {
+            Path.Combine(ModuleDirectory, "Shared")
+        });
+
         PrivateIncludePaths.AddRange(new string[]
         {
             // ... add other private include paths required here ...

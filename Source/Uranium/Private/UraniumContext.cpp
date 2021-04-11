@@ -2,6 +2,8 @@
 
 #include "UraniumContext.h"
 
+#include <functional>
+
 #include "Engine/Engine.h"
 #include "Uranium.h"
 #include "UraniumApp.h"

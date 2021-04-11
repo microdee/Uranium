@@ -2,6 +2,7 @@
 
 #include "SharedTexture/D3D11/D3D11SharedTexture.h"
 #include "SharedTexture/D3D11/D3D11ImGfxCtx.h"
+#include "UeVersion.h"
 
 #include "Uranium.h"
 
@@ -44,11 +45,22 @@ void UD3D11SharedTexture::Render()
     if(!TargetTexture->IsValidLowLevelFast()) return;
     ENQUEUE_RENDER_COMMAND(void)([this](FRHICommandListImmediate& RHICmdList)
     {
+#if UE_VERSION >= MAKE_UE_VERSION(4, 26)
+        
+        if (!TargetTexture->Resource) return;
+
+        auto RhiRes = TargetTexture->Resource->GetTexture2DRHI();
+        if (!RhiRes) return;
+        
+#else
+        
         auto TargetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
         if (!TargetRes) return;
 
         auto RhiRes = TargetRes->GetTexture2DRHI();
         if (!RhiRes) return;
+        
+#endif
 
         auto NativeRes = static_cast<ID3D11Texture2D*>(RhiRes->GetNativeResource());
         if (!NativeRes) return;

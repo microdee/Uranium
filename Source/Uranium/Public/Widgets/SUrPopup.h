@@ -22,7 +22,6 @@ public:
     DECLARE_DELEGATE_OneParam(FGetPopupWidget, TSharedPtr<SWidget>& /* OutWidget */)
 
     SLATE_BEGIN_ARGS(SUrPopup)
-        : _ParentBrowserWidget({})
         { }
 
         SLATE_ATTRIBUTE(TWeakPtr<SUrBrowser>, ParentBrowserWidget)
