@@ -142,9 +142,9 @@ public class Uranium : ModuleRules
 
         var psbuild = Process.Start(new ProcessStartInfo {
             FileName = "powershell.exe",
-            Arguments = "\"" + PluginDirectory + "\\UraniumCef.Build.ps1\" " +
+            Arguments = "\"" + PluginDirectory + "\\Source\\UraniumCef.Build.ps1\" " +
                 cefVersion + " " + cefConfig,
-            WorkingDirectory = PluginDirectory,
+            WorkingDirectory = PluginDirectory + "\\Source",
             UseShellExecute = false,
         });
         psbuild.WaitForExit();
