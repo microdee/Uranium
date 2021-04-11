@@ -70,6 +70,7 @@ public:
 
     void Close();
     bool IsAllReady();
+    bool IsBrowserReady();
 
 #pragma endregion Implementation
 

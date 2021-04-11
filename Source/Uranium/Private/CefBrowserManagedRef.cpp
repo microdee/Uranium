@@ -6,6 +6,6 @@ bool UCefBrowserManagedRef::IsAvailable(bool bCheckBrowserReady)
 {
     if(!this) return false;
     if(bCheckBrowserReady)
-        return IsValidLowLevel() && Obj && Obj->IsAllReady();
+        return IsValidLowLevel() && Obj && Obj->IsBrowserReady();
     return IsValidLowLevel() && Obj;
 }

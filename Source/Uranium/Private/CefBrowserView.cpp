@@ -126,7 +126,13 @@ void FCefBrowserView::Close()
 bool FCefBrowserView::IsAllReady()
 {
     if(!this) return false;
-    return bInitialized && Browser && BrowserHost && UrWrapper.IsValid();
+    return IsBrowserReady() && UrWrapper.IsValid();
+}
+
+bool FCefBrowserView::IsBrowserReady()
+{
+    if(!this) return false;
+    return bInitialized && Browser && BrowserHost;
 }
 
 bool FCefBrowserView::GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
