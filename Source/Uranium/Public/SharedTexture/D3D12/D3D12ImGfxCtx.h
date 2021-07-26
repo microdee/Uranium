@@ -26,29 +26,29 @@ using namespace Microsoft::WRL;
 UCLASS()
 class UD3D12ImGfxCtx : public UObject, public IImGfxCtx
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 private:
-    static ID3D12Device* GetRhiDevice();
+	static ID3D12Device* GetRhiDevice();
 
-    bool bIsInitialized = false;
+	bool bIsInitialized = false;
 
-    ComPtr<ID3D12Device> Device;
-    ComPtr<ID3D12CommandAllocator> CommandAllocator;
-    ComPtr<ID3D12CommandQueue> CommandQueue;
-    ComPtr<ID3D12RootSignature> RootSignature;
-    ComPtr<ID3D12DescriptorHeap> RtvHeap;
-    ComPtr<ID3D12GraphicsCommandList> CommandList;
+	ComPtr<ID3D12Device> Device;
+	ComPtr<ID3D12CommandAllocator> CommandAllocator;
+	ComPtr<ID3D12CommandQueue> CommandQueue;
+	ComPtr<ID3D12RootSignature> RootSignature;
+	ComPtr<ID3D12DescriptorHeap> RtvHeap;
+	ComPtr<ID3D12GraphicsCommandList> CommandList;
 
-    ComPtr<ID3D11Device> MutexOnlyDevice;
-    ComPtr<ID3D11DeviceContext> MutexOnlyContext;
-    ComPtr<ID3D11Device1> MutexOnlyDevice1;
+	ComPtr<ID3D11Device> MutexOnlyDevice;
+	ComPtr<ID3D11DeviceContext> MutexOnlyContext;
+	ComPtr<ID3D11Device1> MutexOnlyDevice1;
 
-    bool GetRhiAdapter(IDXGIAdapter*& OutAdapter);
-    void EndFrame();
-    void Initialize();
+	bool GetRhiAdapter(IDXGIAdapter*& OutAdapter);
+	void EndFrame();
+	void Initialize();
 public:
-    ComPtr<ID3D12Fence> Fence;
-    ComPtr<ID3D12Resource> TargetTexture;
+	ComPtr<ID3D12Fence> Fence;
+	ComPtr<ID3D12Resource> TargetTexture;
 
-    virtual void OnAcceleratedPaint(void* Handle) override;
+	virtual void OnAcceleratedPaint(void* Handle) override;
 };

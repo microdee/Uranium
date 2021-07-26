@@ -19,30 +19,30 @@ class URANIUM_API SUrPopup : public SCompoundWidget
 {
 public:
 
-    DECLARE_DELEGATE_OneParam(FGetPopupWidget, TSharedPtr<SWidget>& /* OutWidget */)
+	DECLARE_DELEGATE_OneParam(FGetPopupWidget, TSharedPtr<SWidget>& /* OutWidget */)
 
-    SLATE_BEGIN_ARGS(SUrPopup)
-        { }
+	SLATE_BEGIN_ARGS(SUrPopup)
+		{ }
 
-        SLATE_ATTRIBUTE(TWeakPtr<SUrBrowser>, ParentBrowserWidget)
+		SLATE_ATTRIBUTE(TWeakPtr<SUrBrowser>, ParentBrowserWidget)
 
-    SLATE_END_ARGS()
+	SLATE_END_ARGS()
 
-    SUrPopup()
-    {
-        SetCanTick(true);
-        bCanSupportFocus = true;
-    }
+	SUrPopup()
+	{
+		SetCanTick(true);
+		bCanSupportFocus = true;
+	}
 
-    TWeakPtr<SUrBrowser> ParentBrowserWidget;
-    TSharedPtr<SImage> BaseImage;
+	TWeakPtr<SUrBrowser> ParentBrowserWidget;
+	TSharedPtr<SImage> BaseImage;
 
-    /** Constructs this widget with InArgs */
-    void Construct(const FArguments& InArgs);
+	/** Constructs this widget with InArgs */
+	void Construct(const FArguments& InArgs);
 
-    virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 
 private:
-    TSharedPtr<FDeferredCleanupSlateBrush> PersistentBrush;
-    void* PrevTextureID = nullptr;
+	TSharedPtr<FDeferredCleanupSlateBrush> PersistentBrush;
+	void* PrevTextureID = nullptr;
 };

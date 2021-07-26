@@ -25,25 +25,25 @@ using namespace Microsoft::WRL;
 UCLASS()
 class URANIUM_API UD3D11LegacySharedTexture : public UObject, public ISharedTexture
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 private:
-    ComPtr<ID3D11Texture2D> SharedTexture;
+	ComPtr<ID3D11Texture2D> SharedTexture;
 
-    UPROPERTY()
-    UTexture2D* TargetTexture;
+	UPROPERTY()
+	UTexture2D* TargetTexture;
 
-    static ID3D11Device* GetRhiDevice();
-    static ID3D11DeviceContext* GetImmediateContext();
+	static ID3D11Device* GetRhiDevice();
+	static ID3D11DeviceContext* GetImmediateContext();
 
 public:
 
 #if !(UR_CHROM_COMPAT_USE_NTHANDLE()) || UR_ST_DEVMODE
-    virtual void Initialize() override;
-    virtual void OnAcceleratedPaint(void* Handle) override;
-    virtual void Render() override;
-    virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) override;
-    virtual bool IsApplicable() override;
+	virtual void Initialize() override;
+	virtual void OnAcceleratedPaint(void* Handle) override;
+	virtual void Render() override;
+	virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) override;
+	virtual bool IsApplicable() override;
 #endif
 
-    virtual UTexture2D* GetTexture() override { return TargetTexture; }
+	virtual UTexture2D* GetTexture() override { return TargetTexture; }
 };

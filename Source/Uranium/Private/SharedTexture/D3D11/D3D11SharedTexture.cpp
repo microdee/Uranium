@@ -8,76 +8,76 @@
 
 ID3D11Device* UD3D11SharedTexture::GetRhiDevice()
 {
-    return static_cast<ID3D11Device*>(GDynamicRHI->RHIGetNativeDevice());
+	return static_cast<ID3D11Device*>(GDynamicRHI->RHIGetNativeDevice());
 }
 
 ID3D11DeviceContext* UD3D11SharedTexture::GetImmediateContext()
 {
-    ID3D11DeviceContext* res;
-    GetRhiDevice()->GetImmediateContext(&res);
-    return res;
+	ID3D11DeviceContext* res;
+	GetRhiDevice()->GetImmediateContext(&res);
+	return res;
 }
 
 #if (UR_CHROM_COMPAT_USE_NTHANDLE()) || UR_ST_DEVMODE
 void UD3D11SharedTexture::Initialize()
 {
-    ImGfxCtx = NewObject<UD3D11ImGfxCtx>();
+	ImGfxCtx = NewObject<UD3D11ImGfxCtx>();
 }
 
 void UD3D11SharedTexture::OnAcceleratedPaint(void* Handle)
 {
-    ImGfxCtx->OnAcceleratedPaint(Handle);
+	ImGfxCtx->OnAcceleratedPaint(Handle);
 
-    if (PreviousHandle == Handle) return;
-    PreviousHandle = Handle;
+	if (PreviousHandle == Handle) return;
+	PreviousHandle = Handle;
 
-    auto UEFormat = FromDXGIFormat(ImGfxCtx->Format);
+	auto UEFormat = FromDXGIFormat(ImGfxCtx->Format);
 
-    if (
-        Width != ImGfxCtx->Width
-        || Height != ImGfxCtx->Height
-        || Format != UEFormat
-    ) InvalidateUeResources(ImGfxCtx->Width, ImGfxCtx->Height, UEFormat);
+	if (
+		Width != ImGfxCtx->Width
+		|| Height != ImGfxCtx->Height
+		|| Format != UEFormat
+	) InvalidateUeResources(ImGfxCtx->Width, ImGfxCtx->Height, UEFormat);
 }
 
 void UD3D11SharedTexture::Render()
 {
-    if(!TargetTexture->IsValidLowLevelFast()) return;
-    ENQUEUE_RENDER_COMMAND(void)([this](FRHICommandListImmediate& RHICmdList)
-    {
+	if(!TargetTexture->IsValidLowLevelFast()) return;
+	ENQUEUE_RENDER_COMMAND(void)([this](FRHICommandListImmediate& RHICmdList)
+	{
 #if UE_VERSION >= MAKE_UE_VERSION(4, 26)
-        
-        if (!TargetTexture->Resource) return;
+		
+		if (!TargetTexture->Resource) return;
 
-        auto RhiRes = TargetTexture->Resource->GetTexture2DRHI();
-        if (!RhiRes) return;
-        
+		auto RhiRes = TargetTexture->Resource->GetTexture2DRHI();
+		if (!RhiRes) return;
+		
 #else
-        
-        auto TargetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
-        if (!TargetRes) return;
+		
+		auto TargetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
+		if (!TargetRes) return;
 
-        auto RhiRes = TargetRes->GetTexture2DRHI();
-        if (!RhiRes) return;
-        
+		auto RhiRes = TargetRes->GetTexture2DRHI();
+		if (!RhiRes) return;
+		
 #endif
 
-        auto NativeRes = static_cast<ID3D11Texture2D*>(RhiRes->GetNativeResource());
-        if (!NativeRes) return;
+		auto NativeRes = static_cast<ID3D11Texture2D*>(RhiRes->GetNativeResource());
+		if (!NativeRes) return;
 
-        GetImmediateContext()->CopyResource(NativeRes, ImGfxCtx->TargetTexture.Get());
-    });
+		GetImmediateContext()->CopyResource(NativeRes, ImGfxCtx->TargetTexture.Get());
+	});
 }
 
 void UD3D11SharedTexture::InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat)
 {
-    Width = InWidth; Height = InHeight; Format = InFormat;
-    TargetTexture = UTexture2D::CreateTransient(InWidth, InHeight, InFormat, TextureName);
-    TargetTexture->UpdateResource();
+	Width = InWidth; Height = InHeight; Format = InFormat;
+	TargetTexture = UTexture2D::CreateTransient(InWidth, InHeight, InFormat, TextureName);
+	TargetTexture->UpdateResource();
 }
 
 bool UD3D11SharedTexture::IsApplicable()
 {
-    return (UR_CHROM_COMPAT_USE_NTHANDLE()) && CurrentRHI().Equals("D3D11");
+	return (UR_CHROM_COMPAT_USE_NTHANDLE()) && CurrentRHI().Equals("D3D11");
 }
 #endif

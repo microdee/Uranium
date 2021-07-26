@@ -26,36 +26,36 @@ using namespace Microsoft::WRL;
 UCLASS()
 class URANIUM_API UD3D12LegacySharedTexture : public UObject, public ISharedTexture
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 private:
 
-    UPROPERTY()
-    UTexture2D* TargetTexture;
+	UPROPERTY()
+	UTexture2D* TargetTexture;
 
-    bool bIsInitialized = false;
+	bool bIsInitialized = false;
 
-    static ID3D12Device* GetRhiDevice();
-    static ID3D12CommandQueue* GetRhiCommandQueue(FRHICommandListImmediate& RHICmdList);
-    static ID3D12GraphicsCommandList* GetRhiGfxCmdList(FRHICommandListImmediate& RHICmdList);
-    ID3D12Resource* GetTargetTextureResource();
-    bool CreateDD3D11On12TargetTexture();
+	static ID3D12Device* GetRhiDevice();
+	static ID3D12CommandQueue* GetRhiCommandQueue(FRHICommandListImmediate& RHICmdList);
+	static ID3D12GraphicsCommandList* GetRhiGfxCmdList(FRHICommandListImmediate& RHICmdList);
+	ID3D12Resource* GetTargetTextureResource();
+	bool CreateDD3D11On12TargetTexture();
 
-    void* InitQueuedHandle = nullptr;
-    ComPtr<ID3D11Texture2D> D3D11On12TargetTexture;
-    ComPtr<ID3D11Texture2D> SharedTexture;
-    ComPtr<ID3D11Device> D3D11Device;
-    ComPtr<ID3D11On12Device> D3D11On12Device;
-    ComPtr<ID3D11DeviceContext> D3D11Context;
+	void* InitQueuedHandle = nullptr;
+	ComPtr<ID3D11Texture2D> D3D11On12TargetTexture;
+	ComPtr<ID3D11Texture2D> SharedTexture;
+	ComPtr<ID3D11Device> D3D11Device;
+	ComPtr<ID3D11On12Device> D3D11On12Device;
+	ComPtr<ID3D11DeviceContext> D3D11Context;
 
 public:
 
 #if !(UR_CHROM_COMPAT_USE_NTHANDLE()) || UR_ST_DEVMODE
-    virtual void Initialize() override;
-    virtual void OnAcceleratedPaint(void* Handle) override;
-    virtual void Render() override;
-    virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) override;
-    virtual bool IsApplicable() override;
+	virtual void Initialize() override;
+	virtual void OnAcceleratedPaint(void* Handle) override;
+	virtual void Render() override;
+	virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) override;
+	virtual bool IsApplicable() override;
 #endif
 
-    virtual UTexture2D* GetTexture() override { return TargetTexture; }
+	virtual UTexture2D* GetTexture() override { return TargetTexture; }
 };

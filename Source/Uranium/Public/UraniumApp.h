@@ -15,18 +15,18 @@
 #include "CefIncludesEnd.h"
 
 class URANIUM_API FUraniumApp
-    : public CefApp
-    , public CefBrowserProcessHandler
+	: public CefApp
+	, public CefBrowserProcessHandler
 {
 public:
 
-    virtual void OnBeforeCommandLineProcessing(
-        CefString const& process_type,
-        CefRefPtr<CefCommandLine> command_line
-    ) override;
+	virtual void OnBeforeCommandLineProcessing(
+		CefString const& process_type,
+		CefRefPtr<CefCommandLine> command_line
+	) override;
 
-    virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override;
-    virtual void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
+	virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override;
+	virtual void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
 
-    IMPLEMENT_REFCOUNTING(FUraniumApp);
+	IMPLEMENT_REFCOUNTING(FUraniumApp);
 };

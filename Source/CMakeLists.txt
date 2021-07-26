@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
 project(UraniumCefProcess
-    VERSION 0.3.0
-    LANGUAGES CXX
+	VERSION 0.3.0
+	LANGUAGES CXX
 )
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(URCP_IS_X64 ON)
+	set(URCP_IS_X64 ON)
 else()
-    set(URCP_IS_X64 OFF)
+	set(URCP_IS_X64 OFF)
 endif()
 
 set(URCP_CEF_VERSION "85.0.4183.121.ST" CACHE STRING "The target CEF distrib version, must match the CEF.* folder name.")
@@ -24,24 +24,24 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(URCP_MAIN_FILES
-    "${URCP_SRC_ROOT}/main.cpp"
-    "${URCP_SRC_ROOT}/UraniumCefApp.h"
-    "${URCP_SRC_ROOT}/UraniumCefApp.cpp"
+	"${URCP_SRC_ROOT}/main.cpp"
+	"${URCP_SRC_ROOT}/UraniumCefApp.h"
+	"${URCP_SRC_ROOT}/UraniumCefApp.cpp"
 )
 
 source_group( "Main" FILES ${URCP_MAIN_FILES} )
 
 set(URCP_SHARED_FILES
-    "${URCP_SHARED_SRC}/CefV8Utils.h"
-    "${URCP_SHARED_SRC}/CefCompat.h"
-    "${URCP_SHARED_SRC}/CefV8Utils.cpp"
+	"${URCP_SHARED_SRC}/CefV8Utils.h"
+	"${URCP_SHARED_SRC}/CefCompat.h"
+	"${URCP_SHARED_SRC}/CefV8Utils.cpp"
 )
 
 source_group( "Shared" FILES ${URCP_SHARED_FILES} )
 
 add_executable(UraniumCefProcess WIN32
-    ${URCP_MAIN_FILES}
-    ${URCP_SHARED_FILES}
+	${URCP_MAIN_FILES}
+	${URCP_SHARED_FILES}
 )
 
 set(CEF_ROOT ${URCP_CEF_ROOT})
@@ -52,8 +52,8 @@ SET_EXECUTABLE_TARGET_PROPERTIES(UraniumCefProcess)
 SET_CEF_TARGET_OUT_DIR()
 
 target_include_directories(UraniumCefProcess PUBLIC
-    ${CMAKE_SOURCE_DIR}/UraniumCefProcess
-    ${_CEF_ROOT}
+	${CMAKE_SOURCE_DIR}/UraniumCefProcess
+	${_CEF_ROOT}
 )
 
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
@@ -61,17 +61,17 @@ add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 add_dependencies(UraniumCefProcess libcef_dll_wrapper)
 
 target_link_libraries(UraniumCefProcess
-    libcef_lib
-    libcef_dll_wrapper
+	libcef_lib
+	libcef_dll_wrapper
 )
 
 if (MSVC)
-    add_custom_command(
-        TARGET UraniumCefProcess
-        POST_BUILD
-        COMMAND "mt.exe" -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\UraniumCefProcess\\app.manifest\" -outputresource:\"$<TARGET_FILE:UraniumCefProcess>\"\;1 -nologo
-        COMMENT "Adding app manifest..." 
-    )
+	add_custom_command(
+		TARGET UraniumCefProcess
+		POST_BUILD
+		COMMAND "mt.exe" -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\UraniumCefProcess\\app.manifest\" -outputresource:\"$<TARGET_FILE:UraniumCefProcess>\"\;1 -nologo
+		COMMENT "Adding app manifest..." 
+	)
 endif(MSVC)
 
 PRINT_CEF_CONFIG()

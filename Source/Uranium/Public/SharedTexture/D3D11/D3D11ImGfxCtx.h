@@ -22,20 +22,20 @@ using namespace Microsoft::WRL;
 UCLASS()
 class UD3D11ImGfxCtx : public UObject, public IImGfxCtx
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 private:
-    static ID3D11Device* GetRhiDevice();
+	static ID3D11Device* GetRhiDevice();
 
-    bool bIsInitialized = false;
+	bool bIsInitialized = false;
 
-    ComPtr<ID3D11Device> Device;
-    ComPtr<ID3D11Device1> Device1;
-    ComPtr<ID3D11DeviceContext> DeviceContext;
+	ComPtr<ID3D11Device> Device;
+	ComPtr<ID3D11Device1> Device1;
+	ComPtr<ID3D11DeviceContext> DeviceContext;
 
-    bool GetRhiAdapter(IDXGIAdapter*& OutAdapter);
-    void Initialize();
+	bool GetRhiAdapter(IDXGIAdapter*& OutAdapter);
+	void Initialize();
 public:
-    ComPtr<ID3D11Texture2D> TargetTexture;
-    HANDLE TargetSharedHandle = NULL;
-    virtual void OnAcceleratedPaint(void* Handle) override;
+	ComPtr<ID3D11Texture2D> TargetTexture;
+	HANDLE TargetSharedHandle = NULL;
+	virtual void OnAcceleratedPaint(void* Handle) override;
 };

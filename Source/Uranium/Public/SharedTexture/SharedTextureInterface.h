@@ -21,35 +21,35 @@ class UTexture2D;
 UINTERFACE()
 class URANIUM_API USharedTexture : public UInterface
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 };
 
 class URANIUM_API ISharedTexture
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 protected:
-    void* PreviousHandle = nullptr;
+	void* PreviousHandle = nullptr;
 public:
-    bool bFailure = false;
-    int Width = -1;
-    int Height = -1;
-    EPixelFormat Format = PF_Unknown;
+	bool bFailure = false;
+	int Width = -1;
+	int Height = -1;
+	EPixelFormat Format = PF_Unknown;
 
-    FName TextureName = NAME_None;
+	FName TextureName = NAME_None;
 
-    virtual void Initialize() { }
-    virtual void OnAcceleratedPaint(void* Handle) { }
-    virtual void Render() { }
-    virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) { }
-    virtual bool IsApplicable() { return false; }
-    virtual bool NeedsImmediateGfxContext() { return false; }
-    virtual IImGfxCtx* GetImmediateGfxContext() { return nullptr; }
-    virtual UTexture2D* GetTexture() { return nullptr; }
+	virtual void Initialize() { }
+	virtual void OnAcceleratedPaint(void* Handle) { }
+	virtual void Render() { }
+	virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) { }
+	virtual bool IsApplicable() { return false; }
+	virtual bool NeedsImmediateGfxContext() { return false; }
+	virtual IImGfxCtx* GetImmediateGfxContext() { return nullptr; }
+	virtual UTexture2D* GetTexture() { return nullptr; }
 
-    static FString CurrentRHI();
-    static EPixelFormat FromDXGIFormat(DXGI_FORMAT InFormat);
-    static DXGI_FORMAT FromUEFormat(EPixelFormat InFormat);
+	static FString CurrentRHI();
+	static EPixelFormat FromDXGIFormat(DXGI_FORMAT InFormat);
+	static DXGI_FORMAT FromUEFormat(EPixelFormat InFormat);
 
-    static TScriptInterface<ISharedTexture> CreateSharedTexture();
+	static TScriptInterface<ISharedTexture> CreateSharedTexture();
 };

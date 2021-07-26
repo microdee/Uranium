@@ -27,27 +27,27 @@ class UD3D11ImGfxCtx;
 UCLASS()
 class URANIUM_API UD3D11SharedTexture : public UObject, public ISharedTexture
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 private:
 
-    UPROPERTY()
-    UTexture2D* TargetTexture;
+	UPROPERTY()
+	UTexture2D* TargetTexture;
 
-    UPROPERTY()
-    UD3D11ImGfxCtx* ImGfxCtx;
+	UPROPERTY()
+	UD3D11ImGfxCtx* ImGfxCtx;
 
-    static ID3D11Device* GetRhiDevice();
-    static ID3D11DeviceContext* GetImmediateContext();
+	static ID3D11Device* GetRhiDevice();
+	static ID3D11DeviceContext* GetImmediateContext();
 
 public:
 
 #if (UR_CHROM_COMPAT_USE_NTHANDLE()) || UR_ST_DEVMODE
-    virtual void Initialize() override;
-    virtual void OnAcceleratedPaint(void* Handle) override;
-    virtual void Render() override;
-    virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) override;
-    virtual bool IsApplicable() override;
+	virtual void Initialize() override;
+	virtual void OnAcceleratedPaint(void* Handle) override;
+	virtual void Render() override;
+	virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) override;
+	virtual bool IsApplicable() override;
 #endif
 
-    virtual UTexture2D* GetTexture() override { return TargetTexture; }
+	virtual UTexture2D* GetTexture() override { return TargetTexture; }
 };

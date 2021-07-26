@@ -13,10 +13,10 @@
 UCLASS()
 class UCefBrowserManagedRef : public UObject
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 public:
 
-    CefRefPtr<FCefBrowserView> Obj;
+	CefRefPtr<FCefBrowserView> Obj;
 
-    bool IsAvailable(bool bCheckBrowserReady = true);
+	bool IsAvailable(bool bCheckBrowserReady = true);
 };

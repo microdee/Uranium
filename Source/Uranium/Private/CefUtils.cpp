@@ -13,11 +13,11 @@ DEFINE_LOG_CATEGORY(LogUraniumCefUtils);
 namespace UraniumCefUtils
 {
 #if PLATFORM_WINDOWS
-    void* CEF3DLLHandle = nullptr;
+	void* CEF3DLLHandle = nullptr;
 	void* ElfHandle = nullptr;
 	void* D3DHandle = nullptr;
 	void* GLESHandle = nullptr;
-    void* EGLHandle = nullptr;
+	void* EGLHandle = nullptr;
 #endif
 
 	void* LoadDllCEF(const FString& Path)

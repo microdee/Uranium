@@ -34,43 +34,43 @@ class URANIUM_API FUraniumContext
 {
 private:
 
-    class QuitTask : public CefTask
-    {
-    public:
-        QuitTask() { }
-        void Execute() override {
-            CefQuitMessageLoop();
-        }
+	class QuitTask : public CefTask
+	{
+	public:
+		QuitTask() { }
+		void Execute() override {
+			CefQuitMessageLoop();
+		}
 
-        IMPLEMENT_REFCOUNTING(QuitTask);
-    };
+		IMPLEMENT_REFCOUNTING(QuitTask);
+	};
 
-    bool bIsCefRunning = false;
-    bool bIsCefInitializing = false;
-    bool bCefModulesLoaded = false;
-    int iFrameRate = 60;
-    FString sUserAgent;
+	bool bIsCefRunning = false;
+	bool bIsCefInitializing = false;
+	bool bCefModulesLoaded = false;
+	int iFrameRate = 60;
+	FString sUserAgent;
 
-    TSharedPtr<std::thread> MessageLoopThread;
-    void MessageLoop();
+	TSharedPtr<std::thread> MessageLoopThread;
+	void MessageLoop();
 
 public:
-    static TSharedPtr<FUraniumContext> Singleton;
-    
-    CefRefPtr<FUraniumApp> App;
+	static TSharedPtr<FUraniumContext> Singleton;
+	
+	CefRefPtr<FUraniumApp> App;
 
-    CefSettings GetCefSettings();
+	CefSettings GetCefSettings();
 
-    FString GetUserAgent();
-    void SetUserAgent(FString userAgent);
+	FString GetUserAgent();
+	void SetUserAgent(FString userAgent);
 
-    FString GetCefVersion() { return TEXT(CEF_VERSION); }
-    FString GetChromiumVersion();
+	FString GetCefVersion() { return TEXT(CEF_VERSION); }
+	FString GetChromiumVersion();
 
-    void Initialize();
-    void Shutdown();
-    bool IsCefRunning();
-    FUraniumVoidDel OnCefInitialized;
+	void Initialize();
+	void Shutdown();
+	bool IsCefRunning();
+	FUraniumVoidDel OnCefInitialized;
 };
 
 URANIUM_API TSharedPtr<FUraniumContext> GetSingletonUraniumContext();
@@ -78,29 +78,29 @@ URANIUM_API TSharedPtr<FUraniumContext> GetSingletonUraniumContext();
 UCLASS(BlueprintType)
 class URANIUM_API UUraniumContext : public UObject
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 public:
 
-    static void GlobalTick();
+	static void GlobalTick();
 
-    UFUNCTION(BlueprintCallable, Category = "Uranium", meta = (WorldContext="worldContext"))
-    static void InitializeUranium(FOnCefInitializedDel onInitialized, UObject* worldContext);
+	UFUNCTION(BlueprintCallable, Category = "Uranium", meta = (WorldContext="worldContext"))
+	static void InitializeUranium(FOnCefInitializedDel onInitialized, UObject* worldContext);
 
-    //UFUNCTION(BlueprintCallable, Category = "Uranium")
-    static void ShutdownUranium();
+	//UFUNCTION(BlueprintCallable, Category = "Uranium")
+	static void ShutdownUranium();
 
-    UFUNCTION(BlueprintPure, Category = "Uranium")
-    static FString GetUserAgent();
+	UFUNCTION(BlueprintPure, Category = "Uranium")
+	static FString GetUserAgent();
 
-    UFUNCTION(BlueprintCallable, Category = "Uranium")
-    static void SetUserAgent(FString userAgent);
+	UFUNCTION(BlueprintCallable, Category = "Uranium")
+	static void SetUserAgent(FString userAgent);
 
-    UFUNCTION(BlueprintPure, Category = "Uranium")
-    static FString GetCefVersion();
+	UFUNCTION(BlueprintPure, Category = "Uranium")
+	static FString GetCefVersion();
 
-    UFUNCTION(BlueprintPure, Category = "Uranium")
-    static FString GetChromiumVersion();
+	UFUNCTION(BlueprintPure, Category = "Uranium")
+	static FString GetChromiumVersion();
 
-    UFUNCTION(BlueprintPure, Category = "Uranium")
-    static bool IsCefRunning();
+	UFUNCTION(BlueprintPure, Category = "Uranium")
+	static bool IsCefRunning();
 };
