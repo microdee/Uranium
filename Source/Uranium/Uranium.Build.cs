@@ -104,7 +104,7 @@ public class Uranium : ModuleRules
 	
 	private void ManageCef(ReadOnlyTargetRules Target, string cefVersion, string cefConfig)
 	{
-		Console.WriteLine("Processing CEF");
+		Log.WriteLine(LogEventType.Console, "Processing CEF");
 
 		// Configure and determine folders
 		var targetDir = Path.GetDirectoryName(Target.ProjectFile.FullName);
@@ -127,25 +127,34 @@ public class Uranium : ModuleRules
 		}
 
 		if (!Directory.Exists(cefBinDir))
+		{
 			throw new FileNotFoundException("Correct binary folder of CEF was not found.");
+		}
 
 		if(!Directory.Exists(cefIncludeDir))
+		{
 			throw new FileNotFoundException("Include folder of CEF was not found.");
+		}
 
 		if(!Directory.Exists(cefResourceDir))
+		{
 			throw new FileNotFoundException("Resources folder of CEF was not found.");
+		}
 
-		Console.WriteLine("CEF Input folder: " + cefInputDir);
-		Console.WriteLine("CEF Built folder: " + cefBuiltDir);
-		Console.WriteLine("CEF Output folder: " + cefOutputDir);
+		Log.WriteLine(LogEventType.Console, "CEF Input folder: {0}", cefInputDir);
+		Log.WriteLine(LogEventType.Console, "CEF Built folder: {0}", cefBuiltDir);
+		Log.WriteLine(LogEventType.Console, "CEF Output folder: {0}", cefOutputDir);
 
 		if(!Directory.Exists(cefInputDir))
+		{
 			throw new FileNotFoundException("Specified CEF folder was not found.");
+		}
 
 		// Build CEF and UraniumCefProcess
 		Console.WriteLine("Running script to build CEF wrapper and the CEF subprocess");
 
-		var psbuild = Process.Start(new ProcessStartInfo {
+		var psbuild = Process.Start(new ProcessStartInfo
+		{
 			FileName = "powershell.exe",
 			Arguments = "\"" + PluginDirectory + "\\Source\\UraniumCef.Build.ps1\" " +
 				cefVersion + " " + cefConfig,
@@ -155,12 +164,16 @@ public class Uranium : ModuleRules
 		psbuild.WaitForExit();
 
 		if(!File.Exists(cefSubProcBuiltPath))
+		{
 			throw new Exception("Failed to build CEF wrapper or the CEF subprocess");
+		}
 
 		// Copy results and include library files
 
 		if(!Directory.Exists(cefOutputDir))
+		{
 			Directory.CreateDirectory(cefOutputDir);
+		}
 
 		PublicIncludePaths.Add(cefInputDir);
 		PublicAdditionalLibraries.AddRange(new string[]
@@ -169,15 +182,15 @@ public class Uranium : ModuleRules
 			Path.Combine(cefBuiltDir, "libcef_dll_wrapper.lib")
 		});
 
-		Console.WriteLine("Copying CEF Binaries");
+		Log.WriteLine(LogEventType.Console, "Copying CEF Binaries");
 		CopyDir(cefBinDir, cefOutputDir, true);
 		//File.Copy(icudtlDatPath, Path.Combine(cefOutputDir, "Binaries", "icudtl.dat"), true);
 
-		Console.WriteLine("Copying UraniumCefProcess");
+		Log.WriteLine(LogEventType.Console, "Copying UraniumCefProcess");
 		File.Copy(cefSubProcBuiltPath, cefSubProcOutputPath, true);
 		RuntimeDependencies.Add(cefSubProcOutputPath);
 
-		Console.WriteLine("Copying CEF Resources");
+		Log.WriteLine(LogEventType.Console, "Copying CEF Resources");
 		CopyDir(cefResourceDir, cefOutputDir, true);
 	}
 
@@ -211,22 +224,31 @@ public class Uranium : ModuleRules
 				catch (Exception e)
 				{
 					someFilesFailed = true;
-					Console.WriteLine(
-						"Warning: Copying CEF dependency "
-						+ Path.GetFileName(temppath)
-						+ " failed with exception: "
-						+ e.Message
+					Log.WriteLine(
+						LogEventType.Warning,
+						"Copying CEF dependency {0} failed with the following exception:",
+						Path.GetFileName(temppath)
 					);
+					Log.WriteException(e, null);
 				}
 			}
-			else file.CopyTo(temppath, true);
+			else
+			{
+				file.CopyTo(temppath, true);
+			}
+			
 			if (addRtDeps)
+			{
 				RuntimeDependencies.Add(temppath);
+			}
 		}
 
 		if (someFilesFailed)
 		{
-			Console.WriteLine("Warning: Some existing dependencies could not be updated. Try building the project manually if that causes problems.");
+			Log.WriteLine(
+				LogEventType.Warning,
+				"Some existing dependencies could not be updated. Try building the project manually if that causes problems."
+			);
 		}
 
 		if (copySubDirs)
