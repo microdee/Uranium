@@ -20,3 +20,15 @@ CMakeCache.txt
 CMakeFiles
 *.vcxproj*
 *.sln*
+
+!*.so
+!*.dylib
+!*.dll
+!*.lai
+!*.la
+!*.a
+!*.lib
+!*.exe
+!*.out
+!*.app
+!*.ipa
