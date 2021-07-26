@@ -3,8 +3,6 @@
 
 #include "Widgets/UrBrowserWidget.h"
 
-
-
 #include "UraniumContext.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Engine/UserInterfaceSettings.h"
@@ -32,44 +30,58 @@ TSharedRef<SWidget> UUrBrowserWidget::RebuildWidget()
 	return SlateBrowser.ToSharedRef();
 }
 
-UUrBrowserWidget::UUrBrowserWidget(const FObjectInitializer& Oi)
-	: Super(Oi)
+UUrBrowserWidget::UUrBrowserWidget(const FObjectInitializer& oi)
+	: Super(oi)
 	, ColorAndOpacity(FLinearColor::White)
 {
 }
 
 void UUrBrowserWidget::InitializeWithEvents(
-	FOnBeforeCreatedDel OnBeforeCreatedIn,
-	FOnAfterCreatedFuncDel OnAfterCreatedIn,
-	FNewBrowserMetadata InInitMetadata,
-	UUrBrowserView* InAssociatedBrowser,
-	bool InDoTick
+	FOnBeforeCreatedDel onBeforeCreatedIn,
+	FOnAfterCreatedFuncDel onAfterCreatedIn,
+	FNewBrowserMetadata initMetadataIn,
+	UUrBrowserView* associatedBrowserIn,
+	bool doTickIn
 ) {
-	DoTick = InDoTick;
-	if(InInitMetadata.TargetUrl.IsEmpty())
+	DoTick = doTickIn;
+	if(initMetadataIn.TargetUrl.IsEmpty())
+	{
 		InitMetadata.TargetUrl = InitialUrl;
-	else
-		InitMetadata = InInitMetadata;
-	if(InAssociatedBrowser)
-		AssociatedBrowser = InAssociatedBrowser;
+	}
 	else
 	{
-		AssociatedBrowser = UUrBrowserView::CreateNewUraniumBrowser(this, OnBeforeCreatedIn, OnAfterCreatedIn);
+		InitMetadata = initMetadataIn;
+	}
+	
+	if(associatedBrowserIn)
+	{
+		AssociatedBrowser = associatedBrowserIn;
+	}
+	else
+	{
+		AssociatedBrowser = UUrBrowserView::CreateNewUraniumBrowser(this, onBeforeCreatedIn, onAfterCreatedIn);
 	}
 	ensureMsgf(AssociatedBrowser, TEXT("At this point there should be a valid Associated Browser, but there wasn't"));
 
 	AssociatedBrowser->OnNativePopupShowStatic.AddUObject(this, &UUrBrowserWidget::HandleNativePopupShow);
 }
 
-void UUrBrowserWidget::Initialize(FNewBrowserMetadata InInitMetadata, UUrBrowserView* InAssociatedBrowser, bool InDoTick)
+void UUrBrowserWidget::Initialize(FNewBrowserMetadata initMetadataIn, UUrBrowserView* associatedBrowserIn, bool doTickIn)
 {
-	DoTick = InDoTick;
-	if (InInitMetadata.TargetUrl.IsEmpty())
+	DoTick = doTickIn;
+	if (initMetadataIn.TargetUrl.IsEmpty())
+	{
 		InitMetadata.TargetUrl = InitialUrl;
+	}
 	else
-		InitMetadata = InInitMetadata;
-	if (InAssociatedBrowser)
-		AssociatedBrowser = InAssociatedBrowser;
+	{
+		InitMetadata = initMetadataIn;
+	}
+	
+	if (associatedBrowserIn)
+	{
+		AssociatedBrowser = associatedBrowserIn;
+	}
 	else
 	{
 		AssociatedBrowser = UUrBrowserView::CreateNew(this);
@@ -79,12 +91,12 @@ void UUrBrowserWidget::Initialize(FNewBrowserMetadata InInitMetadata, UUrBrowser
 	AssociatedBrowser->OnNativePopupShowStatic.AddUObject(this, &UUrBrowserWidget::HandleNativePopupShow);
 }
 
-void UUrBrowserWidget::SetOpacity(float InOpacity)
+void UUrBrowserWidget::SetOpacity(float opacity)
 {
-	auto OutColBinding = PROPERTY_BINDING(FSlateColor, ColorAndOpacity);
-	auto OutCol = OutColBinding.Get().GetSpecifiedColor();
-	OutCol.A = InOpacity;
-	ColorAndOpacity = OutCol;
+	auto outColBinding = PROPERTY_BINDING(FSlateColor, ColorAndOpacity);
+	FLinearColor outCol = outColBinding.Get().GetSpecifiedColor();
+	outCol.A = opacity;
+	ColorAndOpacity = outCol;
 }
 
 UUrBrowserView* UUrBrowserWidget::GetAssociatedBrowser() const
@@ -99,7 +111,9 @@ void UUrBrowserWidget::RemoveNativePopupWidget()
 		if(NativePopupWidgetCache->Implements<UUrNativePopupWidget>())
 		{
 			if(SlateBrowser)
+			{
 				SlateBrowser->RemovePopupWidget();
+			}
 		}
 		NativePopupWidgetCache->Destruct();
 		NativePopupWidgetCache = nullptr;
@@ -108,21 +122,31 @@ void UUrBrowserWidget::RemoveNativePopupWidget()
 
 void UUrBrowserWidget::StartPreview()
 {
-	if(!IsDesignTime()) return;
-	FOnCefInitializedDel OnCefInit;
-	OnCefInit.BindDynamic(this, &UUrBrowserWidget::HandlePreviewCefInit);
-	UUraniumContext::InitializeUranium(OnCefInit, this);
+	if(!IsDesignTime())
+	{
+		return;
+	}
+
+	FOnCefInitializedDel onCefInit;
+	onCefInit.BindDynamic(this, &UUrBrowserWidget::HandlePreviewCefInit);
+	UUraniumContext::InitializeUranium(onCefInit, this);
 }
 
 void UUrBrowserWidget::StopPreview()
 {
-	if(AssociatedBrowser) AssociatedBrowser->Close();
+	if(AssociatedBrowser)
+	{
+		AssociatedBrowser->Close();
+	}
 }
 
 void UUrBrowserWidget::OpenDevTools()
 {
 	// TODO: Inspect
-	if (AssociatedBrowser) AssociatedBrowser->ShowDevToolsWindow({0,0});
+	if (AssociatedBrowser)
+	{
+		AssociatedBrowser->ShowDevToolsWindow({0,0});
+	}
 }
 
 void UUrBrowserWidget::SynchronizeProperties()
@@ -151,23 +175,31 @@ const FText UUrBrowserWidget::GetPaletteCategory()
 
 float UUrBrowserWidget::GetViewportScale()
 {
-	if(!GEngine) return 1.0f;
-	if(!GEngine->GameViewport) return 1.0;
-	FVector2D VpSize;
-	GEngine->GameViewport->GetViewportSize(VpSize);
-	float Ret = GetDefault<UUserInterfaceSettings>()->GetDPIScaleBasedOnSize(FIntPoint(VpSize.X, VpSize.Y));
-	return Ret;
+	if(!GEngine || !GEngine->GameViewport)
+	{
+		return 1.0f;
+	}
+	
+	FVector2D vpSize;
+	GEngine->GameViewport->GetViewportSize(vpSize);
+	float ret = GetDefault<UUserInterfaceSettings>()->GetDPIScaleBasedOnSize(FIntPoint(vpSize.X, vpSize.Y));
+	return ret;
 }
 
 TSharedPtr<SWidget> UUrBrowserWidget::SlateGetPopupWidget()
 {
-	if(!NativePopupWidgetClass) return nullptr;
+	if(!NativePopupWidgetClass)
+	{
+		return nullptr;
+	}
+	
 	NativePopupWidgetCache = CreateWidget(this, NativePopupWidgetClass);
 
 	if(NativePopupWidgetCache->Implements<UUrNativePopupWidget>())
 	{
 		IUrNativePopupWidget::Execute_OnBeforeAttached(NativePopupWidgetCache, this);
 	}
+	
 	OnBeforeNativePopupWidgetAttached.Broadcast(this, NativePopupWidgetCache);
 	return NativePopupWidgetCache->TakeWidget();
 }
@@ -181,10 +213,14 @@ bool UUrBrowserWidget::ShouldAutoRemoveNativePopupWidget() const
 	return true;
 }
 
-void UUrBrowserWidget::HandleNativePopupShow(bool bShow)
+void UUrBrowserWidget::HandleNativePopupShow(bool show)
 {
-	if (!NativePopupWidgetClass) return;
-	if(bShow)
+	if (!NativePopupWidgetClass)
+	{
+		return;
+	}
+	
+	if(show)
 	{
 		if(NativePopupWidgetCache && NativePopupWidgetCache->Implements<UUrNativePopupWidget>())
 		{
@@ -194,7 +230,10 @@ void UUrBrowserWidget::HandleNativePopupShow(bool bShow)
 	else
 	{
 		if(ShouldAutoRemoveNativePopupWidget())
+		{
 			RemoveNativePopupWidget();
+		}
+		
 		else if(NativePopupWidgetCache)
 		{
 			IUrNativePopupWidget::Execute_OnRemoveRequested(NativePopupWidgetCache, this);

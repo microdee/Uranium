@@ -9,6 +9,8 @@
 
 THIRD_PARTY_INCLUDES_START
 #include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/AllowWindowsPlatformAtomics.h"
+#include "Windows/PreWindowsApi.h"
 
 #include <wrl/client.h>
 #include <d3d11on12.h>
@@ -16,6 +18,8 @@ THIRD_PARTY_INCLUDES_START
 #include <d3d11_1.h>
 #include <d3d12.h>
 
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformAtomics.h"
 #include "Windows/HideWindowsPlatformTypes.h"
 THIRD_PARTY_INCLUDES_END
 
@@ -35,8 +39,8 @@ private:
 	bool bIsInitialized = false;
 
 	static ID3D12Device* GetRhiDevice();
-	static ID3D12CommandQueue* GetRhiCommandQueue(FRHICommandListImmediate& RHICmdList);
-	static ID3D12GraphicsCommandList* GetRhiGfxCmdList(FRHICommandListImmediate& RHICmdList);
+	static ID3D12CommandQueue* GetRhiCommandQueue(FRHICommandListImmediate& cmdList);
+	static ID3D12GraphicsCommandList* GetRhiGfxCmdList(FRHICommandListImmediate& cmdList);
 	ID3D12Resource* GetTargetTextureResource();
 	bool CreateDD3D11On12TargetTexture();
 
@@ -51,9 +55,9 @@ public:
 
 #if !(UR_CHROM_COMPAT_USE_NTHANDLE()) || UR_ST_DEVMODE
 	virtual void Initialize() override;
-	virtual void OnAcceleratedPaint(void* Handle) override;
+	virtual void OnAcceleratedPaint(void* handle) override;
 	virtual void Render() override;
-	virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) override;
+	virtual void InvalidateUeResources(int width, int height, EPixelFormat format) override;
 	virtual bool IsApplicable() override;
 #endif
 

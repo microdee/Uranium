@@ -53,23 +53,23 @@ CefSettings FUraniumContext::GetCefSettings()
 {
 	auto settings = GetMutableDefault<UUrSettings>();
 
-	CefSettings s;
-	s.no_sandbox = true;
-	s.windowless_rendering_enabled = true;
+	CefSettings cefSettings;
+	cefSettings.no_sandbox = true;
+	cefSettings.windowless_rendering_enabled = true;
 #if UE4_MESSAGE_LOOP
 	s.external_message_pump = true;
 	s.multi_threaded_message_loop = false;
 #else
-	s.external_message_pump = false;
-	s.multi_threaded_message_loop = false;
+	cefSettings.external_message_pump = false;
+	cefSettings.multi_threaded_message_loop = false;
 #endif
 
-	s.background_color = settings->DefaultBackgroundColor.ToPackedARGB();
-	s.persist_session_cookies = settings->PersistSessionCookies;
-	s.persist_user_preferences = settings->PersistUserPreferences;
-	s.remote_debugging_port = settings->RemoteDebugPort;
+	cefSettings.background_color = settings->DefaultBackgroundColor.ToPackedARGB();
+	cefSettings.persist_session_cookies = settings->PersistSessionCookies;
+	cefSettings.persist_user_preferences = settings->PersistUserPreferences;
+	cefSettings.remote_debugging_port = settings->RemoteDebugPort;
 
-	SET_STR_SETTING(s.user_agent, *GetUserAgent());
+	SET_STR_SETTING(cefSettings.user_agent, *GetUserAgent());
 
 	FString projectDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
 	FString projectUserDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectUserDir());
@@ -81,33 +81,33 @@ CefSettings FUraniumContext::GetCefSettings()
 	FString cefUser(FPaths::Combine(*projectUserDir, TEXT("CefUser")));
 	FString cefLog(FPaths::Combine(*projectLogDir, TEXT("CefLog")));
 
-	SET_STR_SETTING(s.resources_dir_path, *cefPath);
-	SET_STR_SETTING(s.browser_subprocess_path, *cefProc);
-	SET_STR_SETTING(s.locales_dir_path, *cefLocales);
-	SET_STR_SETTING(s.cache_path, *cefCache);
-	SET_STR_SETTING(s.user_data_path, *cefUser);
-	SET_STR_SETTING(s.log_file, *cefLog);
+	SET_STR_SETTING(cefSettings.resources_dir_path, *cefPath);
+	SET_STR_SETTING(cefSettings.browser_subprocess_path, *cefProc);
+	SET_STR_SETTING(cefSettings.locales_dir_path, *cefLocales);
+	SET_STR_SETTING(cefSettings.cache_path, *cefCache);
+	SET_STR_SETTING(cefSettings.user_data_path, *cefUser);
+	SET_STR_SETTING(cefSettings.log_file, *cefLog);
 
-	return s;
+	return cefSettings;
 }
 
 FString FUraniumContext::GetUserAgent()
 {
-	if(sUserAgent.IsEmpty())
+	if(UserAgent.IsEmpty())
 	{
 		std::wstringstream useragent;
 		useragent
 			<< L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
 			<< L"Chrome/" << *GetChromiumVersion();
 
-		sUserAgent = FString(useragent.str().c_str());
+		UserAgent = FString(useragent.str().c_str());
 	}
-	return sUserAgent;
+	return UserAgent;
 }
 
 void FUraniumContext::SetUserAgent(FString userAgent)
 {
-	sUserAgent = userAgent;
+	UserAgent = userAgent;
 }
 
 FString FUraniumContext::GetChromiumVersion()
@@ -146,7 +146,7 @@ void FUraniumContext::Initialize()
 
 	// TODO: Tick without a world context
 #else
-	MessageLoopThread = MakeShared<std::thread>(
+	MessageLoopThread = MakeShared<std::thread, ESPMode::ThreadSafe>(
 		std::bind(&FUraniumContext::MessageLoop, this)
 	);
 #endif
@@ -165,8 +165,8 @@ void FUraniumContext::Shutdown()
 	}
 
 #if !UE4_MESSAGE_LOOP
-	CefRefPtr<CefTask> qtask(new QuitTask());
-	CefPostTask(TID_UI, qtask.get());
+	CefRefPtr<CefTask> quitTask(new FQuitTask());
+	CefPostTask(TID_UI, quitTask.get());
 	MessageLoopThread->join();
 	MessageLoopThread.Reset();
 #endif

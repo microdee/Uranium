@@ -7,11 +7,15 @@
 
 THIRD_PARTY_INCLUDES_START
 #include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/AllowWindowsPlatformAtomics.h"
+#include "Windows/PreWindowsApi.h"
 
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <d3d11_1.h>
 
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformAtomics.h"
 #include "Windows/HideWindowsPlatformTypes.h"
 THIRD_PARTY_INCLUDES_END
 
@@ -32,10 +36,10 @@ private:
 	ComPtr<ID3D11Device1> Device1;
 	ComPtr<ID3D11DeviceContext> DeviceContext;
 
-	bool GetRhiAdapter(IDXGIAdapter*& OutAdapter);
+	bool GetRhiAdapter(IDXGIAdapter*& outAdapter);
 	void Initialize();
 public:
 	ComPtr<ID3D11Texture2D> TargetTexture;
 	HANDLE TargetSharedHandle = NULL;
-	virtual void OnAcceleratedPaint(void* Handle) override;
+	virtual void OnAcceleratedPaint(void* handle) override;
 };

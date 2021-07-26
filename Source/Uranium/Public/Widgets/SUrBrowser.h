@@ -59,44 +59,44 @@ public:
 	TSharedPtr<SConstraintCanvas> Layout;
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& args);
 
 	void RemovePopupWidget();
 	
-	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+	virtual void Tick(const FGeometry& allottedGeometry, const double currentTime, const float deltaTime) override;
 
-	FCefKeyEventFlags GetModifiers(const FInputEvent& Event);
-	FCefKeyEventFlags GetPointerModifiers(const FPointerEvent& Event);
+	FCefKeyEventFlags GetModifiers(const FInputEvent& event);
+	FCefKeyEventFlags GetPointerModifiers(const FPointerEvent& event);
 
-	virtual void OnMouseLeave(const FPointerEvent& MouseEvent) override;
-	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	virtual FReply OnMouseWheel(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	virtual FReply OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual void OnMouseLeave(const FPointerEvent& mouseEvent) override;
+	virtual FReply OnMouseMove(const FGeometry& geometry, const FPointerEvent& mouseEvent) override;
+	virtual FReply OnMouseWheel(const FGeometry& geometry, const FPointerEvent& mouseEvent) override;
+	virtual FReply OnMouseButtonDown(const FGeometry& geometry, const FPointerEvent& mouseEvent) override;
+	virtual FReply OnMouseButtonUp(const FGeometry& geometry, const FPointerEvent& mouseEvent) override;
 
-	virtual FReply OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& InTouchEvent) override;
-	virtual FReply OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& InTouchEvent) override;
-	virtual FReply OnTouchForceChanged(const FGeometry& MyGeometry, const FPointerEvent& TouchEvent) override;
-	virtual FReply OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& InTouchEvent) override;
+	virtual FReply OnTouchStarted(const FGeometry& geometry, const FPointerEvent& touchEvent) override;
+	virtual FReply OnTouchMoved(const FGeometry& geometry, const FPointerEvent& touchEvent) override;
+	virtual FReply OnTouchForceChanged(const FGeometry& geometry, const FPointerEvent& touchEvent) override;
+	virtual FReply OnTouchEnded(const FGeometry& geometry, const FPointerEvent& touchEvent) override;
 
 	virtual bool SupportsKeyboardFocus() const override;
 
-	virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
-	virtual FReply OnKeyChar(const FGeometry& MyGeometry, const FCharacterEvent& InCharacterEvent) override;
-	virtual FReply OnKeyUp(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual FReply OnKeyDown(const FGeometry& geometry, const FKeyEvent& keyEvent) override;
+	virtual FReply OnKeyChar(const FGeometry& geometry, const FCharacterEvent& characterEvent) override;
+	virtual FReply OnKeyUp(const FGeometry& geometry, const FKeyEvent& keyEvent) override;
 
 protected:
 
 	TSharedPtr<FDeferredCleanupSlateBrush> PersistentBrush;
 	TSharedPtr<SWidget> CreatePopupWidget();
-	static FVector2D GetUvFromScreenSpace(const FGeometry& Geom, FVector2D InPos);
-	FVector2D GetUvFromBrowser(FVector2D InPos) const;
+	static FVector2D GetUvFromScreenSpace(const FGeometry& geometry, FVector2D position);
+	FVector2D GetUvFromBrowser(FVector2D position) const;
 
-	static FVector2D GetSizeForBrowserContent(const FGeometry& Geom);
+	static FVector2D GetSizeForBrowserContent(const FGeometry& geometry);
 
 private:
-	void HandleOnPopupShow(bool Show);
-	void HandleOnPopupSize(FVector2D Location, FVector2D Size);
+	void HandleOnPopupShow(bool show);
+	void HandleOnPopupSize(FVector2D location, FVector2D size);
 
 	FVector2D PrevMouseLoc = FVector2D::ZeroVector;
 

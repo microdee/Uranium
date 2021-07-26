@@ -38,9 +38,9 @@ public:
 	TSharedPtr<SImage> BaseImage;
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& args);
 
-	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+	virtual void Tick(const FGeometry& allottedGeometry, const double currentTime, const float deltaTime) override;
 
 private:
 	TSharedPtr<FDeferredCleanupSlateBrush> PersistentBrush;

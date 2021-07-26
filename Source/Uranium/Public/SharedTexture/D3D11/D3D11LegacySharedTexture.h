@@ -39,9 +39,9 @@ public:
 
 #if !(UR_CHROM_COMPAT_USE_NTHANDLE()) || UR_ST_DEVMODE
 	virtual void Initialize() override;
-	virtual void OnAcceleratedPaint(void* Handle) override;
+	virtual void OnAcceleratedPaint(void* handle) override;
 	virtual void Render() override;
-	virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) override;
+	virtual void InvalidateUeResources(int width, int height, EPixelFormat format) override;
 	virtual bool IsApplicable() override;
 #endif
 

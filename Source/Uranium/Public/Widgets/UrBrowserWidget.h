@@ -15,8 +15,6 @@ class SUrBrowser;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWidgetCreationDel, UUrBrowserWidget*, ParentWidget, UUserWidget*, NewWidget);
 
-
-
 UINTERFACE(Blueprintable)
 class URANIUM_API UUrNativePopupWidget : public UInterface
 {
@@ -29,10 +27,10 @@ class URANIUM_API IUrNativePopupWidget
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Uranium")
-	void OnBeforeAttached(UUrBrowserWidget* ParentWidget);
+	void OnBeforeAttached(UUrBrowserWidget* parentWidget);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Uranium")
-	void OnRemoveRequested(UUrBrowserWidget* ParentWidget);
+	void OnRemoveRequested(UUrBrowserWidget* parentWidget);
 };
 
 /**
@@ -61,7 +59,7 @@ protected:
 
 public:
 
-	UUrBrowserWidget(const FObjectInitializer& Oi);
+	UUrBrowserWidget(const FObjectInitializer& oi);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Appearance, meta = (sRGB = "true"))
 	FSlateColor ColorAndOpacity;
@@ -111,25 +109,25 @@ public:
 	 * For most top-level cases leaving everything default is sufficient, and therefore pins
 	 * are hidden behind the expander.
 	 *
-	 * @param OnBeforeCreatedIn         Called before creating a new Uranium browser
-	 * @param OnAfterCreatedIn          Called after the internal new Uranium browser is created
+	 * @param onBeforeCreatedIn         Called before creating a new Uranium browser
+	 * @param onAfterCreatedIn          Called after the internal new Uranium browser is created
 	 *
-	 * @param InInitMetadata            If created from new window events, feed the metadata of the new
+	 * @param initMetadataIn            If created from new window events, feed the metadata of the new
 	 *                                  browser into this parameter.
 	 *
-	 * @param InAssociatedBrowser       If null/none this widget will be the authority of a Uranium
+	 * @param associatedBrowserIn       If null/none this widget will be the authority of a Uranium
 	 *                                  browser object. Otherwise caller can provide their own browser object
 	 *                                  but they're responsible then managing its lifetime.
 	 *
-	 * @param InDoTick                  When true (default) this widget will tick the associated Uranium browser
+	 * @param doTickIn                  When true (default) this widget will tick the associated Uranium browser
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Uranium", meta = (AdvancedDisplay = 1))
 	void InitializeWithEvents(
-		FOnBeforeCreatedDel OnBeforeCreatedIn,
-		FOnAfterCreatedFuncDel OnAfterCreatedIn,
-		FNewBrowserMetadata InInitMetadata,
-		UUrBrowserView* InAssociatedBrowser = nullptr,
-		bool InDoTick = true
+		FOnBeforeCreatedDel onBeforeCreatedIn,
+		FOnAfterCreatedFuncDel onAfterCreatedIn,
+		FNewBrowserMetadata initMetadataIn,
+		UUrBrowserView* associatedBrowserIn = nullptr,
+		bool doTickIn = true
 	);
 
 	/**
@@ -138,24 +136,24 @@ public:
 	 * For most top-level cases leaving everything default is sufficient, and therefore pins
 	 * are hidden behind the expander.
 	 *
-	 * @param InInitMetadata            If created from new window events, feed the metadata of the new
+	 * @param initMetadataIn            If created from new window events, feed the metadata of the new
 	 *                                  browser into this parameter.
 	 *
-	 * @param InAssociatedBrowser       If null/none this widget will be the authority of a Uranium
+	 * @param associatedBrowserIn       If null/none this widget will be the authority of a Uranium
 	 *                                  browser object. Otherwise caller can provide their own browser object
 	 *                                  but they're responsible then managing its lifetime.
 	 *
-	 * @param InDoTick                  When true (default) this widget will tick the associated Uranium browser
+	 * @param doTickIn                  When true (default) this widget will tick the associated Uranium browser
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Uranium", meta = (AdvancedDisplay = 1))
 	void Initialize(
-		FNewBrowserMetadata InInitMetadata,
-		UUrBrowserView* InAssociatedBrowser = nullptr,
-		bool InDoTick = true
+		FNewBrowserMetadata initMetadataIn,
+		UUrBrowserView* associatedBrowserIn = nullptr,
+		bool doTickIn = true
 	);
 
 	UFUNCTION(BlueprintCallable, Category = "Appearance")
-	void SetOpacity(float InOpacity);
+	void SetOpacity(float opacity);
 
 	UPROPERTY()
 	FGetSlateColor ColorAndOpacityDelegate;
@@ -217,7 +215,7 @@ private:
 	UUserWidget* NativePopupWidgetCache;
 
 	UFUNCTION()
-	void HandleNativePopupShow(bool bShow);
+	void HandleNativePopupShow(bool show);
 
 	UFUNCTION()
 	void HandlePreviewCefInit();

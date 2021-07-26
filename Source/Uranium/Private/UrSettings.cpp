@@ -20,12 +20,12 @@ bool FUraniumSwitch::IsEmpty()
 void UUrSettings::RegisterSettings()
 {
 #if WITH_EDITOR
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	if (ISettingsModule* settingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		ISettingsContainerPtr SettingsContainer = SettingsModule->GetContainer("Project");
+		ISettingsContainerPtr settingsContainer = settingsModule->GetContainer("Project");
 
 		auto specimen = GetMutableDefault<UUrSettings>();
-		ISettingsSectionPtr SettingsSection = SettingsModule->RegisterSettings(
+		ISettingsSectionPtr settingsSection = settingsModule->RegisterSettings(
 			"Project", "Plugins", "Uranium",
 			LOCTEXT("RuntimeGeneralSettingsName", "Uranium"),
 			LOCTEXT("RuntimeGeneralSettingsDescription", "These settings will only take effect when UE4 (Editor) is restarted."), specimen
@@ -37,9 +37,9 @@ void UUrSettings::RegisterSettings()
 void UUrSettings::UnregisterSettings()
 {
 #if WITH_EDITOR
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	if (ISettingsModule* settingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->UnregisterSettings("Project", "Plugins", "Uranium");
+		settingsModule->UnregisterSettings("Project", "Plugins", "Uranium");
 	}
 #endif
 }

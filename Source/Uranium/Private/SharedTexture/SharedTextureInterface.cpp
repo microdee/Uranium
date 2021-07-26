@@ -14,9 +14,9 @@ FString ISharedTexture::CurrentRHI()
 	return FHardwareInfo::GetHardwareInfo(NAME_RHI);
 }
 
-EPixelFormat ISharedTexture::FromDXGIFormat(DXGI_FORMAT InFormat)
+EPixelFormat ISharedTexture::FromDXGIFormat(DXGI_FORMAT format)
 {
-	switch (InFormat)
+	switch (format)
 	{
 	case DXGI_FORMAT_UNKNOWN                    : return PF_Unknown;
 	case DXGI_FORMAT_R32G32B32A32_TYPELESS      : return PF_R32G32B32A32_UINT;
@@ -142,9 +142,9 @@ EPixelFormat ISharedTexture::FromDXGIFormat(DXGI_FORMAT InFormat)
 	}
 }
 
-DXGI_FORMAT ISharedTexture::FromUEFormat(EPixelFormat InFormat)
+DXGI_FORMAT ISharedTexture::FromUEFormat(EPixelFormat format)
 {
-	switch (InFormat)
+	switch (format)
 	{
 	case PF_Unknown            : return DXGI_FORMAT_UNKNOWN;
 
@@ -230,14 +230,17 @@ T* GetDefaultObjOfClass()
 }
 
 template<typename T>
-bool TryCreateSharedTextureImpl(TScriptInterface<ISharedTexture>& OutSharedTex)
+bool TryCreateSharedTextureImpl(TScriptInterface<ISharedTexture>& outSharedTex)
 {
-	if(OutSharedTex) return false;
+	if(outSharedTex)
+	{
+		return false;
+	}
 
 	if (GetDefaultObjOfClass<T>()->IsApplicable())
 	{
-		OutSharedTex = NewObject<T>();
-		OutSharedTex->Initialize();
+		outSharedTex = NewObject<T>();
+		outSharedTex->Initialize();
 		return true;
 	}
 	return false;
@@ -245,11 +248,11 @@ bool TryCreateSharedTextureImpl(TScriptInterface<ISharedTexture>& OutSharedTex)
 
 TScriptInterface<ISharedTexture> ISharedTexture::CreateSharedTexture()
 {
-	TScriptInterface<ISharedTexture> Candidate = nullptr;
-	TryCreateSharedTextureImpl<UD3D11SharedTexture>(Candidate);
-	TryCreateSharedTextureImpl<UD3D11LegacySharedTexture>(Candidate);
-	TryCreateSharedTextureImpl<UD3D12SharedTexture>(Candidate);
-	TryCreateSharedTextureImpl<UD3D12LegacySharedTexture>(Candidate);
-	ensureAlwaysMsgf(Candidate, TEXT("No implementation of shared texture is applicable"));
-	return Candidate;
+	TScriptInterface<ISharedTexture> candidate = nullptr;
+	TryCreateSharedTextureImpl<UD3D11SharedTexture>(candidate);
+	TryCreateSharedTextureImpl<UD3D11LegacySharedTexture>(candidate);
+	TryCreateSharedTextureImpl<UD3D12SharedTexture>(candidate);
+	TryCreateSharedTextureImpl<UD3D12LegacySharedTexture>(candidate);
+	ensureAlwaysMsgf(candidate, TEXT("No implementation of shared texture is applicable"));
+	return candidate;
 }

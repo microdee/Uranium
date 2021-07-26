@@ -15,7 +15,7 @@ public:
 	TMap<void*, CefRefPtr<CefDictionaryValue>> ObjectValueAssoc;
 	TMap<void*, UObject*> ValueObjectAssoc;
 
-	void Add(UObject* InObject, CefRefPtr<CefDictionaryValue> InValue);
+	void Add(UObject* object, CefRefPtr<CefDictionaryValue> value);
 };
 
 class FPinObjects
@@ -23,11 +23,11 @@ class FPinObjects
 	TArray<UObject*> Objects;
 public:
 	FPinObjects();
-	explicit FPinObjects(TWeakObjectPtr<UObject> InObject);
-	explicit FPinObjects(UObject* InObject);
+	explicit FPinObjects(TWeakObjectPtr<UObject> object);
+	explicit FPinObjects(UObject* object);
 	~FPinObjects();
 	
-	void With(UObject* InObject);
+	void With(UObject* object);
 };
 
 /**
@@ -36,102 +36,102 @@ public:
 class URANIUM_API FCefJsObjectSerializer
 {
 public:
-	static CefRefPtr<CefDictionaryValue> ToCefValue(TWeakObjectPtr<UObject> From);
-	static void ToUObject(TWeakObjectPtr<UObject> Target, CefRefPtr<CefDictionaryValue> From);
+	static CefRefPtr<CefDictionaryValue> ToCefValue(TWeakObjectPtr<UObject> from);
+	static void ToUObject(TWeakObjectPtr<UObject> target, CefRefPtr<CefDictionaryValue> from);
 
 private:
 	static CefRefPtr<CefValue> FieldToCefValue(
-		FField* InField,
-		const void* ValuePtr,
-		FObjectTraversalState& Traversal
+		FField* field,
+		const void* valuePtr,
+		FObjectTraversalState& traversal
 	);
 	
 	static void CefValueToField(
-		FField* InField,
-		void* ValuePtr,
-		CefRefPtr<CefValue> Input,
-		FObjectTraversalState& Traversal,
-		FPinObjects& Pins,
-		UObject* RootObj
+		FField* field,
+		void* valuePtr,
+		CefRefPtr<CefValue> input,
+		FObjectTraversalState& traversal,
+		FPinObjects& pins,
+		UObject* rootObj
 	);
 	
 	static void ObjectPropertyToCefValue(
-		CefRefPtr<CefValue> Target,
-		FObjectProperty* InProp,
-		const void* ValuePtr,
-		FObjectTraversalState& Traversal
+		CefRefPtr<CefValue> target,
+		FObjectProperty* inProp,
+		const void* valuePtr,
+		FObjectTraversalState& traversal
 	);
 	
 	static void CefValueToObjectProperty(
-		FObjectProperty* InProp,
-		void* ValuePtr,
-		CefRefPtr<CefValue> Input,
-		FObjectTraversalState& Traversal,
-		FPinObjects& Pins,
-		UObject* RootObj
+		FObjectProperty* inProp,
+		void* valuePtr,
+		CefRefPtr<CefValue> input,
+		FObjectTraversalState& traversal,
+		FPinObjects& pins,
+		UObject* rootObj
 	);
 	
 	static void StructPropertyToCefValue(
-		CefRefPtr<CefValue> Target,
-		FStructProperty* InProp,
-		const void* ValuePtr,
-		FObjectTraversalState& Traversal
+		CefRefPtr<CefValue> target,
+		FStructProperty* inProp,
+		const void* valuePtr,
+		FObjectTraversalState& traversal
 	);
 	
 	static void CefValueToStructProperty(
-		FStructProperty* InProp,
-		void* ValuePtr,
-		CefRefPtr<CefValue> Input,
-		FObjectTraversalState& Traversal,
-		FPinObjects& Pins,
-		UObject* RootObj
+		FStructProperty* inProp,
+		void* valuePtr,
+		CefRefPtr<CefValue> input,
+		FObjectTraversalState& traversal,
+		FPinObjects& pins,
+		UObject* rootObj
 	);
 	
 	static void MapPropertyToCefValue(
-		CefRefPtr<CefValue> Target,
-		FMapProperty* InProp,
-		const void* ValuePtr,
-		FObjectTraversalState& Traversal
+		CefRefPtr<CefValue> target,
+		FMapProperty* inProp,
+		const void* valuePtr,
+		FObjectTraversalState& traversal
 	);
 	
 	static void CefValueToMapProperty(
-		FMapProperty* InProp,
-		void* ValuePtr,
-		CefRefPtr<CefValue> Input,
-		FObjectTraversalState& Traversal,
-		FPinObjects& Pins,
-		UObject* RootObj
+		FMapProperty* inProp,
+		void* valuePtr,
+		CefRefPtr<CefValue> input,
+		FObjectTraversalState& traversal,
+		FPinObjects& pins,
+		UObject* rootObj
 	);
 	
 	static void SetPropertyToCefValue(
-		CefRefPtr<CefValue> Target,
-		FSetProperty* InProp,
-		const void* ValuePtr,
-		FObjectTraversalState& Traversal
+		CefRefPtr<CefValue> target,
+		FSetProperty* inProp,
+		const void* valuePtr,
+		FObjectTraversalState& traversal
 	);
 	
 	static void CefValueToSetProperty(
-		FSetProperty* InProp,
-		void* ValuePtr,
-		CefRefPtr<CefValue> Input,
-		FObjectTraversalState& Traversal,
-		FPinObjects& Pins,
-		UObject* RootObj
+		FSetProperty* inProp,
+		void* valuePtr,
+		CefRefPtr<CefValue> input,
+		FObjectTraversalState& traversal,
+		FPinObjects& pins,
+		UObject* rootObj
 	);
 	
 	static void ArrayPropertyToCefValue(
-		CefRefPtr<CefValue> Target,
-		FArrayProperty* InProp,
-		const void* ValuePtr,
-		FObjectTraversalState& Traversal
+		CefRefPtr<CefValue> target,
+		FArrayProperty* inProp,
+		const void* valuePtr,
+		FObjectTraversalState& traversal
 	);
 	
 	static void CefValueToArrayProperty(
-		FArrayProperty* InProp,
-		void* ValuePtr,
-		CefRefPtr<CefValue> Input,
-		FObjectTraversalState& Traversal,
-		FPinObjects& Pins,
-		UObject* RootObj
+		FArrayProperty* inProp,
+		void* valuePtr,
+		CefRefPtr<CefValue> input,
+		FObjectTraversalState& traversal,
+		FPinObjects& pins,
+		UObject* rootObj
 	);
 };

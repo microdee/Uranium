@@ -49,11 +49,7 @@ public:
 
 #pragma region Implementation
 
-	static CefRefPtr<FCefBrowserView> CreateNew(
-		FVector2D initialSize,
-		FString url,
-		UUrBrowserView* wrapper
-	);
+	static CefRefPtr<FCefBrowserView> CreateNew(FVector2D initialSize, FString url, UUrBrowserView* wrapper);
 
 	bool bInitialized = false;
 
@@ -65,8 +61,8 @@ public:
 
 	static void SetCommonBrowserSettings(CefWindowInfo& winInfo, CefBrowserSettings& settings);
 
-	void ShowDevToolsWindow(FVector2D InspectElementAt);
-	void ShowDevToolsEmbedded(FVector2D InspectElementAt, int width, int height);
+	void ShowDevToolsWindow(FVector2D inspectElementAt);
+	void ShowDevToolsEmbedded(FVector2D inspectElementAt, int width, int height);
 
 	void Close();
 	bool IsAllReady();
@@ -90,7 +86,7 @@ public:
 #pragma region CefRenderHandler
 
 	virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
-	virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) override;
+	virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screenInfo) override;
 	virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
 
 	virtual void OnAcceleratedPaint(
@@ -114,13 +110,13 @@ public:
 
 	virtual void OnTextSelectionChanged(
 		CefRefPtr<CefBrowser> browser,
-		const CefString& selected_text,
-		const CefRange& selected_range
+		const CefString& selectedText,
+		const CefRange& selectedRange
 	) override;
 
 	virtual void OnVirtualKeyboardRequested(
 		CefRefPtr<CefBrowser> browser, 
-		TextInputMode input_mode
+		TextInputMode inputMode
 	) override;
 
 #pragma endregion CefRenderHandler
@@ -133,16 +129,16 @@ public:
 	virtual bool OnBeforePopup(
 		CefRefPtr<CefBrowser> browser,
 		CefRefPtr<CefFrame> frame,
-		const CefString& target_url,
-		const CefString& target_frame_name,
-		CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-		bool user_gesture,
+		const CefString& targetUrl,
+		const CefString& targetFrameName,
+		CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
+		bool userGesture,
 		const CefPopupFeatures& popupFeatures,
 		CefWindowInfo& windowInfo,
 		CefRefPtr<CefClient>& client,
 		CefBrowserSettings& settings,
 #if UR_CHROM_COMPAT_EXTRAINFO()
-		CefRefPtr<CefDictionaryValue>& extra_info,
+		CefRefPtr<CefDictionaryValue>& extraInfo,
 #endif
 		bool* no_javascript_access
 	) override;
@@ -168,7 +164,7 @@ public:
 	virtual void OnLoadStart(
 		CefRefPtr<CefBrowser> browser,
 		CefRefPtr<CefFrame> frame,
-		TransitionType transition_type
+		TransitionType transitionType
 	) override;
 
 	virtual void OnLoadingStateChange(
@@ -189,11 +185,11 @@ public:
 		CefRefPtr<CefBrowser> browser,
 		CefRefPtr<CefFrame> frame,
 		CefRefPtr<CefRequest> request,
-		bool user_gesture,
-		bool is_redirect
+		bool userGesture,
+		bool isRedirect
 	) override;
 
-	virtual void OnPluginCrashed(CefRefPtr<CefBrowser> browser, const CefString& plugin_path) override;
+	virtual void OnPluginCrashed(CefRefPtr<CefBrowser> browser, const CefString& pluginPath) override;
 	virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status) override;
 	virtual void OnRenderViewReady(CefRefPtr<CefBrowser> browser) override;
 
@@ -202,10 +198,10 @@ public:
 		CefRefPtr<CefBrowser> browser,
 		CefRefPtr<CefFrame> frame,
 		CefRefPtr<CefRequest> request,
-		bool is_navigation,
-		bool is_download,
-		const CefString& request_initiator,
-		bool& disable_default_handling
+		bool isNavigation,
+		bool isDownload,
+		const CefString& requestInitiator,
+		bool& disableDefaultHandling
 	) override;
 
 #pragma endregion CefRequestHandler
@@ -218,7 +214,7 @@ public:
 		const CefString& url
 	) override;
 
-	virtual bool OnAutoResize(CefRefPtr<CefBrowser> browser, const CefSize& new_size) override;
+	virtual bool OnAutoResize(CefRefPtr<CefBrowser> browser, const CefSize& newSize) override;
 
 	virtual bool OnConsoleMessage(
 		CefRefPtr<CefBrowser> browser,
@@ -244,21 +240,21 @@ public:
 
 	virtual bool OnJSDialog(
 		CefRefPtr<CefBrowser> browser,
-		const CefString& origin_url,
-		JSDialogType dialog_type,
-		const CefString& message_text,
-		const CefString& default_prompt_text,
+		const CefString& originUrl,
+		JSDialogType dialogType,
+		const CefString& messageText,
+		const CefString& defaultPromptText,
 		CefRefPtr<CefJSDialogCallback> callback,
-		bool& suppress_message
+		bool& suppressMessage
 	) override;
 
 	virtual bool OnFileDialog(
 		CefRefPtr<CefBrowser> browser,
 		FileDialogMode mode,
 		const CefString& title,
-		const CefString& default_file_path,
-		const std::vector<CefString>& accept_filters,
-		int selected_accept_filter,
+		const CefString& defaultFilePath,
+		const std::vector<CefString>& acceptFilters,
+		int selectedAcceptFilter,
 		CefRefPtr<CefFileDialogCallback> callback
 	) override;
 

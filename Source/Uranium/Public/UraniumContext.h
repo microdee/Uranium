@@ -34,24 +34,24 @@ class URANIUM_API FUraniumContext
 {
 private:
 
-	class QuitTask : public CefTask
+	class FQuitTask : public CefTask
 	{
 	public:
-		QuitTask() { }
+		FQuitTask() { }
 		void Execute() override {
 			CefQuitMessageLoop();
 		}
 
-		IMPLEMENT_REFCOUNTING(QuitTask);
+		IMPLEMENT_REFCOUNTING(FQuitTask);
 	};
 
 	bool bIsCefRunning = false;
 	bool bIsCefInitializing = false;
 	bool bCefModulesLoaded = false;
-	int iFrameRate = 60;
-	FString sUserAgent;
+	int FrameRate = 60;
+	FString UserAgent;
 
-	TSharedPtr<std::thread> MessageLoopThread;
+	TSharedPtr<std::thread, ESPMode::ThreadSafe> MessageLoopThread;
 	void MessageLoop();
 
 public:

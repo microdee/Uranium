@@ -6,34 +6,37 @@
 
 THIRD_PARTY_INCLUDES_START
 #include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/AllowWindowsPlatformAtomics.h"
+#include "Windows/PreWindowsApi.h"
 
-#define InterlockedDecrement _InterlockedDecrement
-#define InterlockedIncrement _InterlockedIncrement
 #include <comdef.h>
-#undef InterlockedDecrement
-#undef InterlockedIncrement
 
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformAtomics.h"
 #include "Windows/HideWindowsPlatformTypes.h"
 THIRD_PARTY_INCLUDES_END
 
-inline FString GetHResultErrorString(HRESULT Hr)
+inline FString GetHResultErrorString(HRESULT hr)
 {
-	_com_error ComError(Hr);
-	FString ErrorStr(ComError.ErrorMessage());
-	FString ErrorDesc(ComError.Description().GetBSTR());
+	_com_error comError(hr);
+	FString errorStr(comError.ErrorMessage());
+	FString errorDesc(comError.Description().GetBSTR());
 	
-	return FString::Printf(TEXT("%#8x | %s \n  (%s)"), Hr, *ErrorStr, *ErrorDesc);
+	return FString::Printf(TEXT("%#8x | %s \n  (%s)"), hr, *errorStr, *errorDesc);
 }
 
-inline bool HrFail_Impl(HRESULT Hr, FString M, bool& bFailureMember)
+inline bool HrFail_Impl(HRESULT hr, FString m, bool& failureMember)
 {
-	if(SUCCEEDED(Hr)) return bFailureMember = false;
+	if(SUCCEEDED(hr))
+	{
+		return failureMember = false;
+	}
 
-	FString HrStr = GetHResultErrorString(Hr);
-	UE_LOG(LogUranium, Error, TEXT("Shared Texture error: %s"), *M);
-	UE_LOG(LogUranium, Error, TEXT("HRESULT: %s"), *HrStr);
+	FString hrStr = GetHResultErrorString(hr);
+	UE_LOG(LogUranium, Error, TEXT("Shared Texture error: %s"), *m);
+	UE_LOG(LogUranium, Error, TEXT("HRESULT: %s"), *hrStr);
 	PLATFORM_BREAK();
-	return bFailureMember = true;
+	return failureMember = true;
 }
 
 #define HrFail(hr, m) HrFail_Impl(hr, m, bFailure)

@@ -7,6 +7,8 @@
 
 THIRD_PARTY_INCLUDES_START
 #include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/AllowWindowsPlatformAtomics.h"
+#include "Windows/PreWindowsApi.h"
 
 #include <wrl/client.h>
 #include <d3d11.h>
@@ -16,6 +18,8 @@ THIRD_PARTY_INCLUDES_START
 #include <dxgi1_4.h>
 #include <dxgi1_6.h>
 
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformAtomics.h"
 #include "Windows/HideWindowsPlatformTypes.h"
 THIRD_PARTY_INCLUDES_END
 
@@ -43,12 +47,12 @@ private:
 	ComPtr<ID3D11DeviceContext> MutexOnlyContext;
 	ComPtr<ID3D11Device1> MutexOnlyDevice1;
 
-	bool GetRhiAdapter(IDXGIAdapter*& OutAdapter);
+	bool GetRhiAdapter(IDXGIAdapter*& outAdapter);
 	void EndFrame();
 	void Initialize();
 public:
 	ComPtr<ID3D12Fence> Fence;
 	ComPtr<ID3D12Resource> TargetTexture;
 
-	virtual void OnAcceleratedPaint(void* Handle) override;
+	virtual void OnAcceleratedPaint(void* handle) override;
 };

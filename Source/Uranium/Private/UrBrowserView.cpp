@@ -32,8 +32,8 @@ void UUrBrowserView::OnBeforeCloseInternal()
 	}
 }
 
-UUrBrowserView::UUrBrowserView(const FObjectInitializer& Oi)
-	: Super(Oi)
+UUrBrowserView::UUrBrowserView(const FObjectInitializer& oi)
+	: Super(oi)
 {
 }
 
@@ -84,16 +84,22 @@ UUrBrowserView* UUrBrowserView::CreateNewUraniumBrowser(UObject* worldContext, F
 		res->Parent->AddChild(res);
 	}
 	if (onAfterCreated.IsBound())
+	{
 		res->OnAfterCreated.Add(onAfterCreated);
+	}
 		
 	return res;
 }
 
-void UUrBrowserView::DeferredInit(FVector2D InitialSize, FString Url)
+void UUrBrowserView::DeferredInit(FVector2D initialSize, FString url)
 {
-	if(Instance->Obj) return;
-	MainSize = InitialSize;
-	Instance->Obj = FCefBrowserView::CreateNew(InitialSize, Url, this);
+	if(Instance->Obj)
+	{
+		return;
+	}
+	
+	MainSize = initialSize;
+	Instance->Obj = FCefBrowserView::CreateNew(initialSize, url, this);
 	bBrowserValid = Instance->Obj.get() != nullptr;
 
 	if (bBrowserValid)
@@ -103,16 +109,20 @@ void UUrBrowserView::DeferredInit(FVector2D InitialSize, FString Url)
 	}
 }
 
-void UUrBrowserView::DeferredInit(UCefBrowserManagedRef* FromInstance)
+void UUrBrowserView::DeferredInit(UCefBrowserManagedRef* fromInstance)
 {
-	if (Instance->Obj) return;
-	bBrowserValid = FromInstance != nullptr;
+	if (Instance->Obj)
+	{
+		return;
+	}
+	
+	bBrowserValid = fromInstance != nullptr;
 
 	if (bBrowserValid)
 	{
-		MainSize = FromInstance->Obj->vMainSize;
-		FromInstance->Obj->UrWrapper = this;
-		Instance = FromInstance;
+		MainSize = fromInstance->Obj->vMainSize;
+		fromInstance->Obj->UrWrapper = this;
+		Instance = fromInstance;
 		MainTexture = ISharedTexture::CreateSharedTexture();
 		NativePopupTexture = ISharedTexture::CreateSharedTexture();
 	}
@@ -120,12 +130,21 @@ void UUrBrowserView::DeferredInit(UCefBrowserManagedRef* FromInstance)
 
 void UUrBrowserView::Close()
 {
-	if (bClosing) return;
-	if (!Instance->IsValidLowLevel()) return;
+	if (bClosing)
+	{
+		return;
+	}
+	if (!Instance->IsValidLowLevel())
+	{
+		return;
+	}
+	
 	bClosing = true;
 
 	if(Instance->IsAvailable())
+	{
 		Instance->Obj->Close();
+	}
 
 	Instance = nullptr;
 }
@@ -133,32 +152,50 @@ void UUrBrowserView::Close()
 void UUrBrowserView::BeginDestroy()
 {
 	Super::BeginDestroy();
-	if (!bClosing) Close();
+	if (!bClosing)
+	{
+		Close();
+	}
 }
 
 void UUrBrowserView::GetMainSize(FVector2D& desiredMainSize, FVector2D& actualMainSize) const
 {
 	desiredMainSize = MainSize;
-	if(MainTexture) 
+	if(MainTexture)
+	{
 		actualMainSize = FVector2D(MainTexture->Width, MainTexture->Height);
-	else actualMainSize = FVector2D::ZeroVector;
+	}
+	else
+	{
+		actualMainSize = FVector2D::ZeroVector;
+	}
 }
 
 UTexture2D* UUrBrowserView::GetMainTexture() const
 {
-	if(!MainTexture) return nullptr;
+	if(!MainTexture)
+	{
+		return nullptr;
+	}
 	return MainTexture->GetTexture();
 }
 
 UTexture2D* UUrBrowserView::GetNativePopupTexture() const
 {
-	if (!NativePopupTexture) return nullptr;
+	if (!NativePopupTexture)
+	{
+		return nullptr;
+	}
 	return NativePopupTexture->GetTexture();
 }
 
 void UUrBrowserView::SetMainSize(FVector2D size, bool force /*= false*/)
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	
 	size = FMath::Max(size, FVector2D(128, 128));
 	if (MainSize != size || Instance->Obj->vMainSize != size || force)
 	{
@@ -171,19 +208,26 @@ void UUrBrowserView::SetMainSize(FVector2D size, bool force /*= false*/)
 void UUrBrowserView::Tick(float deltaSeconds, bool recursive /*= false*/)
 {
 #if SEND_EXTERNAL_BEGINFRAME
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 	Instance->Obj->BrowserHost->SendExternalBeginFrame();
 #endif
 
 	if(MainTexture)
+	{
 		MainTexture->Render();
+	}
 
 	if (bPopupShown && NativePopupTexture)
+	{
 		NativePopupTexture->Render();
+	}
 
 	if (recursive)
 	{
-		for (auto br : Children)
+		for (UUrBrowserView* br : Children)
 		{
 			br->Tick(deltaSeconds);
 		}
@@ -192,14 +236,20 @@ void UUrBrowserView::Tick(float deltaSeconds, bool recursive /*= false*/)
 
 int UUrBrowserView::GetIdentifier() const
 {
-	if (!Instance->IsAvailable()) return 0;
+	if (!Instance->IsAvailable())
+	{
+		return 0;
+	}
 	return Instance->Obj->Browser->GetIdentifier();
 }
 
 bool UUrBrowserView::IsSame(UUrBrowserView* other) const
 {
 	if (!this->IsValidLowLevelFast(false) && !other->IsValidLowLevelFast(false))
+	{
 		return true;
+	}
+	
 	if (!other->IsValidLowLevelFast(false)) return false;
 	if (!this->IsValidLowLevelFast(false)) return false;
 	if (!Instance->Obj && !other->Instance->Obj) return true;
@@ -211,151 +261,211 @@ bool UUrBrowserView::IsSame(UUrBrowserView* other) const
 
 bool UUrBrowserView::IsPopup() const
 {
-	if(!Instance->IsAvailable()) return false;
+	if(!Instance->IsAvailable())
+	{
+		return false;
+	}
 	return Instance->Obj->Browser->IsPopup();
 }
 
 bool UUrBrowserView::HasDocument() const
 {
-	if (!Instance->IsAvailable()) return false;
+	if (!Instance->IsAvailable())
+	{
+		return false;
+	}
 	return Instance->Obj->Browser->HasDocument();
 }
 
 void UUrBrowserView::LoadUrl(FString url)
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 	Instance->Obj->Browser->GetMainFrame()->LoadURL(*url);
 }
 
-void UUrBrowserView::LoadHtml(const FHtmlContent& HtmlContent)
+void UUrBrowserView::LoadHtml(const FHtmlContent& htmlContent)
 {
-	if (!Instance->IsAvailable()) return;
-	auto LoadContentOnLoadEnd = [this](int)
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	auto loadContentOnLoadEnd = [this](int)
 	{
 		//TODO: use resource handlers implementation
 	};
 	Instance->Obj->Browser->GetMainFrame()->LoadURL("about:blank");
 }
 
-void UUrBrowserView::ExecuteJavaScript(FString Code, FString ScriptUrl, int StartLine /*= 0*/)
+void UUrBrowserView::ExecuteJavaScript(FString code, FString scriptUrl, int startLine /*= 0*/)
 {
-	if (!Instance->IsAvailable()) return;
-	Instance->Obj->Browser->GetMainFrame()->ExecuteJavaScript(*Code, *ScriptUrl, StartLine);
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	Instance->Obj->Browser->GetMainFrame()->ExecuteJavaScript(*code, *scriptUrl, startLine);
 }
 
 FString UUrBrowserView::GetURL() const
 {
-	if (!Instance->IsAvailable()) return TEXT("error:no-browser");
+	if (!Instance->IsAvailable())
+	{
+		return TEXT("error:no-browser");
+	}
 	return FString(Instance->Obj->Browser->GetMainFrame()->GetURL().c_str());
 }
 
-void UUrBrowserView::SetZoomLevel(float Zoom)
+void UUrBrowserView::SetZoomLevel(float zoom)
 {
-	if (!Instance->IsAvailable()) return;
-	Instance->Obj->BrowserHost->SetZoomLevel(Zoom);
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	Instance->Obj->BrowserHost->SetZoomLevel(zoom);
 }
 
 void UUrBrowserView::GoBack()
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 	Instance->Obj->Browser->GoBack();
 }
 
 void UUrBrowserView::GoForward()
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 	Instance->Obj->Browser->GoForward();
 }
 
 void UUrBrowserView::Reload()
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 	Instance->Obj->Browser->Reload();
 }
 
 void UUrBrowserView::ReloadIgnoreCache()
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 	Instance->Obj->Browser->ReloadIgnoreCache();
 }
 
 bool UUrBrowserView::IsLoading() const
 {
-	if (!Instance->IsAvailable()) return true;
+	if (!Instance->IsAvailable())
+	{
+		return true;
+	}
 	return Instance->Obj->Browser->IsLoading();
 }
 
-void UUrBrowserView::ShowDevToolsWindow(FVector2D InspectElementAt)
+void UUrBrowserView::ShowDevToolsWindow(FVector2D inspectElementAt)
 {
-	if (!Instance->IsAvailable()) return;
-	Instance->Obj->ShowDevToolsWindow(InspectElementAt);
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	Instance->Obj->ShowDevToolsWindow(inspectElementAt);
 }
 
-void UUrBrowserView::ShowDevToolsEmbedded(FVector2D InspectElementAt, FVector2D Size)
+void UUrBrowserView::ShowDevToolsEmbedded(FVector2D inspectElementAt, FVector2D size)
 {
-	if (!Instance->IsAvailable()) return;
-	Instance->Obj->ShowDevToolsEmbedded(InspectElementAt, Size.X, Size.Y);
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	Instance->Obj->ShowDevToolsEmbedded(inspectElementAt, size.X, size.Y);
 }
 
 void UUrBrowserView::CloseDevTools()
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 	Instance->Obj->BrowserHost->CloseDevTools();
 }
 
 bool UUrBrowserView::HasDevTools() const
 {
-	if (!Instance->IsAvailable()) return false;
+	if (!Instance->IsAvailable())
+	{
+		return false;
+	}
 	return Instance->Obj->BrowserHost->HasDevTools();
 }
 
-void UUrBrowserView::SetAudioMuted(bool Mute)
+void UUrBrowserView::SetAudioMuted(bool mute)
 {
-	if (!Instance->IsAvailable()) return;
-	Instance->Obj->BrowserHost->SetAudioMuted(Mute);
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	Instance->Obj->BrowserHost->SetAudioMuted(mute);
 }
 
 bool UUrBrowserView::IsAudioMuted() const
 {
-	if (!Instance->IsAvailable()) return false;
+	if (!Instance->IsAvailable())
+	{
+		return false;
+	}
 	return Instance->Obj->BrowserHost->IsAudioMuted();
 }
 
-void UUrBrowserView::SendKeyEvent(FKeyEvent Event, bool IsUp, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendKeyEvent(FKeyEvent event, bool isUp, FCefKeyEventFlags modifiers)
 {
 	SendKeyEventKc(
-		Event.GetKeyCode(),
-		static_cast<TCHAR>(Event.GetCharacter()),
-		Event.IsAltDown(),
-		IsUp,
-		EnforceFlagsFromEvent(Event, Modifiers)
+		event.GetKeyCode(),
+		static_cast<TCHAR>(event.GetCharacter()),
+		event.IsAltDown(),
+		isUp,
+		EnforceFlagsFromEvent(event, modifiers)
 	);
 }
 
-void UUrBrowserView::SendKey(int WindowsKeyCode, FString Character, bool IsUp, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendKey(int windowsKeyCode, FString character, bool isUp, FCefKeyEventFlags modifiers)
 {
 	SendKeyEventKc(
-		static_cast<uint32>(WindowsKeyCode),
-		Character.IsEmpty() ? '\0' : Character[0],
-		Modifiers.AltDown,
-		IsUp,
-		Modifiers
+		static_cast<uint32>(windowsKeyCode),
+		character.IsEmpty() ? '\0' : character[0],
+		modifiers.AltDown,
+		isUp,
+		modifiers
 	);
 }
 
-void UUrBrowserView::SendKeyEventKc(uint32 KeyCode, TCHAR Char, bool IsSysKey, bool IsUp, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendKeyEventKc(uint32 keyCode, TCHAR character, bool isSysKey, bool isUp, FCefKeyEventFlags modifiers)
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 
 	// Some languages use AltGr for special characters, which registers as Alt + Ctrl keypresses
 	// In order to avoid triggering shortcuts like Ctrl+V while typing text, when the right Alt(Gr)
 	// is pressed, do not send explicit key events (only send character)
-	if (Modifiers.AltGrDown) return;
+	if (modifiers.AltGrDown)
+	{
+		return;
+	}
 
-	uint32 ScanCode = MapVirtualKeyA(KeyCode, MAPVK_VK_TO_VSC);
+	uint32 scanCode = MapVirtualKeyA(keyCode, MAPVK_VK_TO_VSC);
 
-	LPARAM lParam = 1 | (ScanCode & 0xFF) << 16; // Scan Code in lParam bits 16..23
-	if (IsUp)
+	LPARAM lParam = 1 | (scanCode & 0xFF) << 16; // Scan Code in lParam bits 16..23
+	if (isUp)
 	{
 		// (bit 30) The previous key state. The value is always 1 for a WM_KEYUP message.
 		// (bit 31) The transition state. The value is always 1 for a WM_KEYUP message.
@@ -371,107 +481,125 @@ void UUrBrowserView::SendKeyEventKc(uint32 KeyCode, TCHAR Char, bool IsSysKey, b
 	}
 
 	CefKeyEvent cefEvent;
-	cefEvent.windows_key_code = KeyCode;
-	cefEvent.character = Char;
-	cefEvent.is_system_key = IsSysKey;
+	cefEvent.windows_key_code = keyCode;
+	cefEvent.character = character;
+	cefEvent.is_system_key = isSysKey;
 	cefEvent.native_key_code = lParam;
-	cefEvent.type = IsUp ? KEYEVENT_KEYUP : KEYEVENT_KEYDOWN;
-	cefEvent.unmodified_character = Char;
-	cefEvent.modifiers = Modifiers.GetEventFlags();
+	cefEvent.type = isUp ? KEYEVENT_KEYUP : KEYEVENT_KEYDOWN;
+	cefEvent.unmodified_character = character;
+	cefEvent.modifiers = modifiers.GetEventFlags();
 	Instance->Obj->BrowserHost->SendKeyEvent(cefEvent);
 }
 
-void UUrBrowserView::SendCharacterKey(FCharacterEvent Event, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendCharacterKey(FCharacterEvent event, FCefKeyEventFlags modifiers)
 {
 	SendCharKc(
-		Event.GetCharacter(),
-		Event.IsAltDown(),
-		EnforceFlagsFromEvent(Event, Modifiers)
+		event.GetCharacter(),
+		event.IsAltDown(),
+		EnforceFlagsFromEvent(event, modifiers)
 	);
 }
 
-void UUrBrowserView::SendKeyString(FString Input, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendKeyString(FString input, FCefKeyEventFlags modifiers)
 {
-	for(const TCHAR& Char : Input)
+	for(const TCHAR& Char : input)
 	{
-		SendCharKc(Char, Modifiers.AltDown, Modifiers);
+		SendCharKc(Char, modifiers.AltDown, modifiers);
 	}
 }
 
-void UUrBrowserView::SendCharKc(TCHAR Char, bool IsSysKey, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendCharKc(TCHAR character, bool isSysKey, FCefKeyEventFlags modifiers)
 {
-	if (!Instance->IsAvailable()) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
 
-	uint32 KeyCode = VkKeyScanA(Char) & 0xff;
-	uint32 ScanCode = MapVirtualKeyA(KeyCode, MAPVK_VK_TO_VSC);
-	LPARAM lParam = 1 | ((ScanCode & 0xFF) << 16);
+	uint32 keyCode = VkKeyScanA(character) & 0xff;
+	uint32 scanCode = MapVirtualKeyA(keyCode, MAPVK_VK_TO_VSC);
+	LPARAM lParam = 1 | ((scanCode & 0xFF) << 16);
 
 	CefKeyEvent cefEvent;
-	cefEvent.character = Char;
-	cefEvent.is_system_key = IsSysKey;
-	cefEvent.windows_key_code = Char;
+	cefEvent.character = character;
+	cefEvent.is_system_key = isSysKey;
+	cefEvent.windows_key_code = character;
 	cefEvent.native_key_code = lParam;
 	cefEvent.type = KEYEVENT_CHAR;
-	cefEvent.unmodified_character = Char;
-	cefEvent.modifiers = Modifiers.GetEventFlags();
+	cefEvent.unmodified_character = character;
+	cefEvent.modifiers = modifiers.GetEventFlags();
 	Instance->Obj->BrowserHost->SendKeyEvent(cefEvent);
 }
 
-CefMouseEvent UUrBrowserView::GetCefMouseEvent(FVector2D Location, bool UVSpace, const FCefKeyEventFlags& Modifiers) const
+CefMouseEvent UUrBrowserView::GetCefMouseEvent(FVector2D location, bool uvSpace, const FCefKeyEventFlags& modifiers) const
 {
 	CefMouseEvent cefEvent;
-	cefEvent.x = UVSpace ? Location.X * MainSize.X : Location.X;
-	cefEvent.y = UVSpace ? Location.Y * MainSize.Y : Location.Y;
-	cefEvent.modifiers = Modifiers.GetEventFlags();
+	cefEvent.x = uvSpace ? location.X * MainSize.X : location.X;
+	cefEvent.y = uvSpace ? location.Y * MainSize.Y : location.Y;
+	cefEvent.modifiers = modifiers.GetEventFlags();
 	return cefEvent;
 }
 
-void UUrBrowserView::SendMouseMove(FVector2D Location, bool UVSpace, bool bLeaving, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendMouseMove(FVector2D location, bool uvSpace, bool leaving, FCefKeyEventFlags modifiers)
 {
-	if (!Instance->IsAvailable()) return;
-	Instance->Obj->BrowserHost->SendMouseMoveEvent(GetCefMouseEvent(Location, UVSpace, Modifiers), bLeaving);
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	Instance->Obj->BrowserHost->SendMouseMoveEvent(GetCefMouseEvent(location, uvSpace, modifiers), leaving);
 }
 
-void UUrBrowserView::SendMouseButton(FVector2D Location, bool UVSpace, const FKey& Button, bool isUp, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendMouseButton(FVector2D location, bool uvSpace, const FKey& button, bool isUp, FCefKeyEventFlags modifiers)
 {
-	if (!Instance->IsAvailable()) return;
-	if (!UraniumInput::IsValidMouseButton(Button)) return;
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	if (!UraniumInput::IsValidMouseButton(button))
+	{
+		return;
+	}
 
 	Instance->Obj->BrowserHost->SendMouseClickEvent(
-		GetCefMouseEvent(Location, UVSpace, Modifiers),
-		UraniumInput::GetUraniumMouseButton(Button),
+		GetCefMouseEvent(location, uvSpace, modifiers),
+		UraniumInput::GetUraniumMouseButton(button),
 		isUp, 1
 	);
 }
 
-void UUrBrowserView::SendMouseWheel(FVector2D Location, bool UVSpace, FVector2D WheelDelta, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendMouseWheel(FVector2D location, bool uvSpace, FVector2D wheelDelta, FCefKeyEventFlags modifiers)
 {
-	if (!Instance->IsAvailable()) return;
-	Instance->Obj->BrowserHost->SendMouseWheelEvent(GetCefMouseEvent(Location, UVSpace, Modifiers), WheelDelta.X, WheelDelta.Y);
+	if (!Instance->IsAvailable())
+	{
+		return;
+	}
+	Instance->Obj->BrowserHost->SendMouseWheelEvent(GetCefMouseEvent(location, uvSpace, modifiers), wheelDelta.X, wheelDelta.Y);
 }
 
-void UUrBrowserView::SendTouchEvent(FUraniumPointerEvent Event, FCefKeyEventFlags Modifiers)
+void UUrBrowserView::SendTouchEvent(FUraniumPointerEvent event, FCefKeyEventFlags modifiers)
 {
-	if (!Instance->IsAvailable()) return;
-	CefTouchEvent cefEvent;
-	cefEvent.id = Event.Id.GetValue();
-	if (Event.IsUVSpace)
+	if (!Instance->IsAvailable())
 	{
-		FVector2D uvloc = Event.Location * MainSize;
+		return;
+	}
+	CefTouchEvent cefEvent;
+	cefEvent.id = event.Id.GetValue();
+	if (event.IsUVSpace)
+	{
+		FVector2D uvloc = event.Location * MainSize;
 		cefEvent.x = uvloc.X;
 		cefEvent.y = uvloc.Y;
 	}
 	else
 	{
-		cefEvent.x = Event.Location.X;
-		cefEvent.y = Event.Location.Y;
+		cefEvent.x = event.Location.X;
+		cefEvent.y = event.Location.Y;
 	}
-	cefEvent.radius_x = Event.Size.X;
-	cefEvent.radius_y = Event.Size.Y;
-	cefEvent.pressure = Event.Pressure;
-	cefEvent.rotation_angle = FMath::DegreesToRadians(Event.RotationDegrees);
-	cefEvent.pointer_type = static_cast<cef_pointer_type_t>(Event.PointerType);
-	cefEvent.type = static_cast<cef_touch_event_type_t>(Event.EventType);
-	cefEvent.modifiers = Modifiers.GetEventFlags();
+	cefEvent.radius_x = event.Size.X;
+	cefEvent.radius_y = event.Size.Y;
+	cefEvent.pressure = event.Pressure;
+	cefEvent.rotation_angle = FMath::DegreesToRadians(event.RotationDegrees);
+	cefEvent.pointer_type = static_cast<cef_pointer_type_t>(event.PointerType);
+	cefEvent.type = static_cast<cef_touch_event_type_t>(event.EventType);
+	cefEvent.modifiers = modifiers.GetEventFlags();
 	Instance->Obj->BrowserHost->SendTouchEvent(cefEvent);
 }

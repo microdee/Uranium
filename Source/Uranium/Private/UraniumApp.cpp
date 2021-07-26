@@ -3,17 +3,17 @@
 #include "UraniumApp.h"
 #include "UrSettings.h"
 
-void FUraniumApp::OnBeforeCommandLineProcessing(CefString const& process_type, CefRefPtr<CefCommandLine> command_line)
+void FUraniumApp::OnBeforeCommandLineProcessing(CefString const& processType, CefRefPtr<CefCommandLine> commandLine)
 {
 	auto settings = GetMutableDefault<UUrSettings>();
 
-	for(auto sw : settings->ChromiumSwitches)
+	for(FUraniumSwitch sw : settings->ChromiumSwitches)
 	{
 		if (sw.IsEmpty()) continue;
 		if (sw.HasValue)
-			command_line->AppendSwitchWithValue(*sw.Switch, *sw.Value);
+			commandLine->AppendSwitchWithValue(*sw.Switch, *sw.Value);
 		else
-			command_line->AppendSwitch(*sw.Switch);
+			commandLine->AppendSwitch(*sw.Switch);
 	}
 }
 
@@ -22,8 +22,8 @@ CefRefPtr<CefBrowserProcessHandler> FUraniumApp::GetBrowserProcessHandler()
 	return this; 
 }
 
-void FUraniumApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line)
+void FUraniumApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> commandLine)
 {
-	auto pid = FString::FromInt(FPlatformProcess::GetCurrentProcessId());
-	command_line->AppendSwitchWithValue(TEXT("ur-ue-pid"), *pid);
+	FString pid = FString::FromInt(FPlatformProcess::GetCurrentProcessId());
+	commandLine->AppendSwitchWithValue(TEXT("ur-ue-pid"), *pid);
 }

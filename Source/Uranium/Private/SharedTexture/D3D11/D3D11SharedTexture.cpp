@@ -24,55 +24,77 @@ void UD3D11SharedTexture::Initialize()
 	ImGfxCtx = NewObject<UD3D11ImGfxCtx>();
 }
 
-void UD3D11SharedTexture::OnAcceleratedPaint(void* Handle)
+void UD3D11SharedTexture::OnAcceleratedPaint(void* handle)
 {
-	ImGfxCtx->OnAcceleratedPaint(Handle);
+	ImGfxCtx->OnAcceleratedPaint(handle);
 
-	if (PreviousHandle == Handle) return;
-	PreviousHandle = Handle;
+	if (PreviousHandle == handle)
+	{
+		return;
+	}
+	
+	PreviousHandle = handle;
 
-	auto UEFormat = FromDXGIFormat(ImGfxCtx->Format);
+	EPixelFormat ueFormat = FromDXGIFormat(ImGfxCtx->Format);
 
-	if (
-		Width != ImGfxCtx->Width
+	if (Width != ImGfxCtx->Width
 		|| Height != ImGfxCtx->Height
-		|| Format != UEFormat
-	) InvalidateUeResources(ImGfxCtx->Width, ImGfxCtx->Height, UEFormat);
+		|| Format != ueFormat
+	) InvalidateUeResources(ImGfxCtx->Width, ImGfxCtx->Height, ueFormat);
 }
 
 void UD3D11SharedTexture::Render()
 {
-	if(!TargetTexture->IsValidLowLevelFast()) return;
-	ENQUEUE_RENDER_COMMAND(void)([this](FRHICommandListImmediate& RHICmdList)
+	if (!TargetTexture->IsValidLowLevelFast())
+	{
+		return;
+	}
+	
+	ENQUEUE_RENDER_COMMAND(void)([this](FRHICommandListImmediate& cmdList)
 	{
 #if UE_VERSION >= MAKE_UE_VERSION(4, 26)
 		
-		if (!TargetTexture->Resource) return;
+		if (!TargetTexture->Resource)
+		{
+			return;
+		}
 
-		auto RhiRes = TargetTexture->Resource->GetTexture2DRHI();
-		if (!RhiRes) return;
+		FRHITexture2D* rhiRes = TargetTexture->Resource->GetTexture2DRHI();
+		if (!rhiRes)
+		{
+			return;
+		}
 		
 #else
 		
-		auto TargetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
-		if (!TargetRes) return;
+		auto targetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
+		if (!targetRes)
+		{
+			return;
+		}
 
-		auto RhiRes = TargetRes->GetTexture2DRHI();
-		if (!RhiRes) return;
+		FRHITexture2D* rhiRes = targetRes->GetTexture2DRHI();
+		if (!rhiRes)
+		{
+			return;
+		}
 		
 #endif
 
-		auto NativeRes = static_cast<ID3D11Texture2D*>(RhiRes->GetNativeResource());
-		if (!NativeRes) return;
+		ID3D11Texture2D* nativeRes = static_cast<ID3D11Texture2D*>(rhiRes->GetNativeResource());
+		if (!nativeRes)
+		{
+			return;
+		}
 
-		GetImmediateContext()->CopyResource(NativeRes, ImGfxCtx->TargetTexture.Get());
+		GetImmediateContext()->CopyResource(nativeRes, ImGfxCtx->TargetTexture.Get());
 	});
 }
 
-void UD3D11SharedTexture::InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat)
+void UD3D11SharedTexture::InvalidateUeResources(int width, int height, EPixelFormat format)
 {
-	Width = InWidth; Height = InHeight; Format = InFormat;
-	TargetTexture = UTexture2D::CreateTransient(InWidth, InHeight, InFormat, TextureName);
+	Width = width; Height = height; Format = format;
+	TargetTexture = UTexture2D::CreateTransient(width, height, format, TextureName);
 	TargetTexture->UpdateResource();
 }
 

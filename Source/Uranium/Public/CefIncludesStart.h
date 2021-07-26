@@ -5,6 +5,7 @@
 
 THIRD_PARTY_INCLUDES_START
 #include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/AllowWindowsPlatformAtomics.h"
 
 // temporarily undefine simplistic UE4 macros CEF might also use
 
@@ -84,9 +85,6 @@ THIRD_PARTY_INCLUDES_START
 #undef ensure
 
 #endif
-
-#define InterlockedCompareExchangePointer _InterlockedCompareExchangePointer
-#define InterlockedExchangeAdd64 _InterlockedExchangeAdd64
 
 #ifndef BUILDING_CEF_SHARED
 #define BUILDING_CEF_SHARED 0

@@ -2,10 +2,17 @@
 
 #include "CefBrowserManagedRef.h"
 
-bool UCefBrowserManagedRef::IsAvailable(bool bCheckBrowserReady)
+bool UCefBrowserManagedRef::IsAvailable(bool checkBrowserReady)
 {
-	if(!this) return false;
-	if(bCheckBrowserReady)
+	if(!this)
+	{
+		return false;
+	}
+	
+	if(checkBrowserReady)
+	{
 		return IsValidLowLevel() && Obj && Obj->IsBrowserReady();
+	}
+	
 	return IsValidLowLevel() && Obj;
 }

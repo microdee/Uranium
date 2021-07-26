@@ -11,9 +11,9 @@
 #include "Widgets/Layout/SConstraintCanvas.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-void SUrPopup::Construct(const FArguments& InArgs)
+void SUrPopup::Construct(const FArguments& args)
 {
-	ParentBrowserWidget = InArgs._ParentBrowserWidget.Get();
+	ParentBrowserWidget = args._ParentBrowserWidget.Get();
 
 	ChildSlot
 	[
@@ -24,24 +24,28 @@ void SUrPopup::Construct(const FArguments& InArgs)
 	];
 }
 
-void SUrPopup::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+void SUrPopup::Tick(const FGeometry& allottedGeometry, const double currentTime, const float deltaTime)
 {
-	if(!ParentBrowserWidget.IsValid()) return;
-	auto Parent = ParentBrowserWidget.Pin();
-	auto Browser = Parent->PersistentArgs._AssociatedBrowser.Get();
-	if(Browser.IsValid())
+	if(!ParentBrowserWidget.IsValid())
 	{
-		auto PopupTex = Browser->GetNativePopupTexture();
-		if(PrevTextureID != PopupTex)
+		return;
+	}
+	
+	auto parent = ParentBrowserWidget.Pin();
+	auto browser = parent->PersistentArgs._AssociatedBrowser.Get();
+	if(browser.IsValid())
+	{
+		UTexture2D* popupTex = browser->GetNativePopupTexture();
+		if(PrevTextureID != popupTex)
 		{
 			PersistentBrush.Reset();
 			PersistentBrush =
-				FDeferredCleanupSlateBrush::CreateBrush(Browser->GetNativePopupTexture());
-			PrevTextureID = PopupTex;
+				FDeferredCleanupSlateBrush::CreateBrush(browser->GetNativePopupTexture());
+			PrevTextureID = popupTex;
 			BaseImage->SetImage(PersistentBrush->GetSlateBrush());
 		}
 		BaseImage->SetVisibility(
-			PopupTex ?
+			popupTex ?
 			EVisibility::HitTestInvisible :
 			EVisibility::Hidden
 		);

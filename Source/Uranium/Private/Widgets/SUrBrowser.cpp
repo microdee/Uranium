@@ -12,9 +12,9 @@
 #include "Widgets/Layout/SConstraintCanvas.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-void SUrBrowser::Construct(const FArguments& InArgs)
+void SUrBrowser::Construct(const FArguments& args)
 {
-	PersistentArgs = InArgs;
+	PersistentArgs = args;
 
 	ChildSlot
 	[
@@ -40,50 +40,50 @@ void SUrBrowser::RemovePopupWidget()
 	}
 }
 
-void SUrBrowser::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+void SUrBrowser::Tick(const FGeometry& allottedGeometry, const double currentTime, const float deltaTime)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if(AssocBrows.IsValid() && AssocBrows->Instance)
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if(assocBrowser.IsValid() && assocBrowser->Instance)
 	{
-		if(PrevBrowser != AssocBrows.Get())
+		if(PrevBrowser != assocBrowser.Get())
 		{
-			PrevBrowser = AssocBrows.Get();
-			AssocBrows->OnNativePopupShowStatic.AddRaw(this, &SUrBrowser::HandleOnPopupShow);
-			AssocBrows->OnNativePopupSizeStatic.AddRaw(this, &SUrBrowser::HandleOnPopupSize);
+			PrevBrowser = assocBrowser.Get();
+			assocBrowser->OnNativePopupShowStatic.AddRaw(this, &SUrBrowser::HandleOnPopupShow);
+			assocBrowser->OnNativePopupSizeStatic.AddRaw(this, &SUrBrowser::HandleOnPopupSize);
 		}
 
-		FVector2D LocalSize = GetSizeForBrowserContent(AllottedGeometry);
-		FVector2D ActualSize;
+		FVector2D localSize = GetSizeForBrowserContent(allottedGeometry);
+		FVector2D actualSize;
 		switch (PersistentArgs._BrowserSizeMode.Get())
 		{
 		case EUrGetBrowserSize::Manually:
-			ActualSize = PersistentArgs._ManualSize.Get();
+			actualSize = PersistentArgs._ManualSize.Get();
 			break;
 
 		case EUrGetBrowserSize::FromDesiredOrManually:
-			ActualSize = PersistentArgs._InitMetadata.Get().DesiredSize.Size() < UE_SQRT_2
+			actualSize = PersistentArgs._InitMetadata.Get().DesiredSize.Size() < UE_SQRT_2
 				? PersistentArgs._ManualSize.Get()
 				: PersistentArgs._InitMetadata.Get().DesiredSize;
 			break;
 
 		case EUrGetBrowserSize::FromDesiredOrFromWidgetLocalSize:
-			ActualSize = PersistentArgs._InitMetadata.Get().DesiredSize.Size() < UE_SQRT_2
-				? AllottedGeometry.GetLocalSize()
+			actualSize = PersistentArgs._InitMetadata.Get().DesiredSize.Size() < UE_SQRT_2
+				? allottedGeometry.GetLocalSize()
 				: PersistentArgs._InitMetadata.Get().DesiredSize;
 			break;
 
 		case EUrGetBrowserSize::FromDesiredOrFromWidgetAbsoluteSize:
-			ActualSize = PersistentArgs._InitMetadata.Get().DesiredSize.Size() < UE_SQRT_2
-				? AllottedGeometry.GetAbsoluteSize()
+			actualSize = PersistentArgs._InitMetadata.Get().DesiredSize.Size() < UE_SQRT_2
+				? allottedGeometry.GetAbsoluteSize()
 				: PersistentArgs._InitMetadata.Get().DesiredSize;
 			break;
 
 		case EUrGetBrowserSize::FromWidgetLocalSize:
-			ActualSize = AllottedGeometry.GetLocalSize();
+			actualSize = allottedGeometry.GetLocalSize();
 			break;
 
 		case EUrGetBrowserSize::FromWidgetAbsoluteSize:
-			ActualSize = AllottedGeometry.GetAbsoluteSize();
+			actualSize = allottedGeometry.GetAbsoluteSize();
 			break;
 
 		default: break;
@@ -92,32 +92,34 @@ void SUrBrowser::Tick(const FGeometry& AllottedGeometry, const double InCurrentT
 		//AssocBrows->ScaleFactor = FMath::Max(ScaleFactor.Get(), 1.0f);
 		//ActualSize *= AssocBrows->ScaleFactor;
 
-		if (PersistentArgs._DoDeferredInit.Get() && !AssocBrows->Instance->Obj)
+		if (PersistentArgs._DoDeferredInit.Get() && !assocBrowser->Instance->Obj)
 		{
-			AssocBrows->DeferredInit(ActualSize, PersistentArgs._InitMetadata.Get().TargetUrl);
+			assocBrowser->DeferredInit(actualSize, PersistentArgs._InitMetadata.Get().TargetUrl);
 		}
 		else
 		{
-			AssocBrows->SetMainSize(ActualSize);
+			assocBrowser->SetMainSize(actualSize);
 		}
 
 		if (PersistentArgs._DoTick.Get())
-			AssocBrows->Tick(InDeltaTime);
+		{
+			assocBrowser->Tick(deltaTime);
+		}
 
-		if(AssocBrows->GetMainTexture())
+		if(assocBrowser->GetMainTexture())
 		{
 			BaseImage->SetVisibility(EVisibility::Visible);
-			FVector2D Desired, Actual;
-			AssocBrows->GetMainSize(Desired, Actual);
+			FVector2D desired, actual;
+			assocBrowser->GetMainSize(desired, actual);
 
-			if (PrevTextureID != AssocBrows->GetMainTexture())
+			if (PrevTextureID != assocBrowser->GetMainTexture())
 			{
-				PrevTextureID = AssocBrows->GetMainTexture();
-				if (AssocBrows->GetMainTexture())
+				PrevTextureID = assocBrowser->GetMainTexture();
+				if (assocBrowser->GetMainTexture())
 				{
 					PersistentBrush.Reset();
 					PersistentBrush =
-						FDeferredCleanupSlateBrush::CreateBrush(AssocBrows->GetMainTexture());
+						FDeferredCleanupSlateBrush::CreateBrush(assocBrowser->GetMainTexture());
 					BaseImage->SetImage(PersistentBrush->GetSlateBrush());
 				}
 			}
@@ -134,176 +136,211 @@ void SUrBrowser::Tick(const FGeometry& AllottedGeometry, const double InCurrentT
 	BaseImage->SetColorAndOpacity(ColorAndOpacity.Get());
 }
 
-FCefKeyEventFlags SUrBrowser::GetModifiers(const FInputEvent& Event)
+FCefKeyEventFlags SUrBrowser::GetModifiers(const FInputEvent& event)
 {
-	PersistentModifiers.CapsLocked = Event.AreCapsLocked();
-	PersistentModifiers.ShiftDown = Event.IsShiftDown();
-	PersistentModifiers.ControlDown = Event.IsControlDown();
-	PersistentModifiers.AltDown = Event.IsLeftAltDown();
-	PersistentModifiers.CommandDown = Event.IsCommandDown();
-	PersistentModifiers.AltGrDown = Event.IsRightAltDown();
+	PersistentModifiers.CapsLocked = event.AreCapsLocked();
+	PersistentModifiers.ShiftDown = event.IsShiftDown();
+	PersistentModifiers.ControlDown = event.IsControlDown();
+	PersistentModifiers.AltDown = event.IsLeftAltDown();
+	PersistentModifiers.CommandDown = event.IsCommandDown();
+	PersistentModifiers.AltGrDown = event.IsRightAltDown();
 	return PersistentModifiers;
 }
 
-FCefKeyEventFlags SUrBrowser::GetPointerModifiers(const FPointerEvent& Event)
+FCefKeyEventFlags SUrBrowser::GetPointerModifiers(const FPointerEvent& event)
 {
 	PersistentModifiers = {};
-	for(auto& Button : Event.GetPressedButtons())
+	for(const FKey& Button : event.GetPressedButtons())
 	{
 		PersistentModifiers.LeftMouseButton |= Button == EKeys::LeftMouseButton;
 		PersistentModifiers.MiddleMouseButton |= Button == EKeys::MiddleMouseButton;
 		PersistentModifiers.RightMouseButton |= Button == EKeys::RightMouseButton;
 	}
-	return GetModifiers(Event);
+	return GetModifiers(event);
 }
 
-void SUrBrowser::OnMouseLeave(const FPointerEvent& MouseEvent)
+void SUrBrowser::OnMouseLeave(const FPointerEvent& mouseEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return;
-	AssocBrows->SendMouseMove(PrevMouseLoc, true, true, GetPointerModifiers(MouseEvent));
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return;
+	}
+	
+	assocBrowser->SendMouseMove(PrevMouseLoc, true, true, GetPointerModifiers(mouseEvent));
 }
 
-FReply SUrBrowser::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SUrBrowser::OnMouseMove(const FGeometry& geometry, const FPointerEvent& mouseEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if(!AssocBrows.IsValid()) return FReply::Unhandled();
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if(!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
 	
 	if (ActiveTouches.Num() > 0)
 	{
 		return FReply::Handled();
 	}
 
-	auto CurrLoc = GetUvFromScreenSpace(MyGeometry, MouseEvent.GetScreenSpacePosition());
-	if(PrevMouseLoc != CurrLoc)
+	FVector2D currLoc = GetUvFromScreenSpace(geometry, mouseEvent.GetScreenSpacePosition());
+	if(PrevMouseLoc != currLoc)
 	{
-		PrevMouseLoc = CurrLoc;
-		AssocBrows->SendMouseMove(CurrLoc, true, false, GetPointerModifiers(MouseEvent));
+		PrevMouseLoc = currLoc;
+		assocBrowser->SendMouseMove(currLoc, true, false, GetPointerModifiers(mouseEvent));
 	}
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnMouseWheel(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SUrBrowser::OnMouseWheel(const FGeometry& geometry, const FPointerEvent& mouseEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
-	AssocBrows->SendMouseWheel(
-		GetUvFromScreenSpace(MyGeometry, MouseEvent.GetScreenSpacePosition()),
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
+	assocBrowser->SendMouseWheel(
+		GetUvFromScreenSpace(geometry, mouseEvent.GetScreenSpacePosition()),
 		true,
-		{ 0.0f, MouseEvent.GetWheelDelta() * 120 },
-		GetPointerModifiers(MouseEvent)
+		{ 0.0f, mouseEvent.GetWheelDelta() * 120 },
+		GetPointerModifiers(mouseEvent)
 	);
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SUrBrowser::OnMouseButtonDown(const FGeometry& geometry, const FPointerEvent& mouseEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
 
 	if(PersistentArgs._UseThumbMouseButtons.Get())
 	{
-		if (MouseEvent.GetEffectingButton() == EKeys::ThumbMouseButton2)
+		if (mouseEvent.GetEffectingButton() == EKeys::ThumbMouseButton2)
 		{
-			AssocBrows->GoForward();
+			assocBrowser->GoForward();
 			return FReply::Handled();
 		}
-		if (MouseEvent.GetEffectingButton() == EKeys::ThumbMouseButton)
+		if (mouseEvent.GetEffectingButton() == EKeys::ThumbMouseButton)
 		{
-			AssocBrows->GoBack();
+			assocBrowser->GoBack();
 			return FReply::Handled();
 		}
 	}
 
-	if(MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && ActiveTouches.Num() > 0)
+	if(mouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && ActiveTouches.Num() > 0)
 	{
 		return FReply::Handled();
 	}
 	
-	AssocBrows->SendMouseButton(
-		GetUvFromScreenSpace(MyGeometry, MouseEvent.GetScreenSpacePosition()),
+	assocBrowser->SendMouseButton(
+		GetUvFromScreenSpace(geometry, mouseEvent.GetScreenSpacePosition()),
 		true,
-		MouseEvent.GetEffectingButton(),
+		mouseEvent.GetEffectingButton(),
 		false,
-		GetPointerModifiers(MouseEvent)
+		GetPointerModifiers(mouseEvent)
 	);
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SUrBrowser::OnMouseButtonUp(const FGeometry& geometry, const FPointerEvent& mouseEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
 
-	AssocBrows->SendMouseButton(
-		GetUvFromScreenSpace(MyGeometry, MouseEvent.GetScreenSpacePosition()),
+	assocBrowser->SendMouseButton(
+		GetUvFromScreenSpace(geometry, mouseEvent.GetScreenSpacePosition()),
 		true,
-		MouseEvent.GetEffectingButton(),
+		mouseEvent.GetEffectingButton(),
 		true,
-		GetPointerModifiers(MouseEvent)
+		GetPointerModifiers(mouseEvent)
 	);
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& InTouchEvent)
+FReply SUrBrowser::OnTouchStarted(const FGeometry& geometry, const FPointerEvent& touchEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
-	ActiveTouches.Add(InTouchEvent.GetPointerIndex());
-	AssocBrows->SendTouchEvent(
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
+	ActiveTouches.Add(touchEvent.GetPointerIndex());
+	assocBrowser->SendTouchEvent(
 		{
-			MyGeometry,
-			InTouchEvent,
+			geometry,
+			touchEvent,
 			EUrPointerEventType::Pressed
 		},
-		GetPointerModifiers(InTouchEvent)
+		GetPointerModifiers(touchEvent)
 	);
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& InTouchEvent)
+FReply SUrBrowser::OnTouchMoved(const FGeometry& geometry, const FPointerEvent& touchEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
-	AssocBrows->SendTouchEvent(
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
+	assocBrowser->SendTouchEvent(
 		{
-			MyGeometry,
-			InTouchEvent,
+			geometry,
+			touchEvent,
 			EUrPointerEventType::Moved
 		},
-		GetPointerModifiers(InTouchEvent)
+		GetPointerModifiers(touchEvent)
 	);
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnTouchForceChanged(const FGeometry& MyGeometry, const FPointerEvent& TouchEvent)
+FReply SUrBrowser::OnTouchForceChanged(const FGeometry& geometry, const FPointerEvent& touchEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
-	AssocBrows->SendTouchEvent(
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
+	assocBrowser->SendTouchEvent(
 		{
-			MyGeometry,
-			TouchEvent,
+			geometry,
+			touchEvent,
 			EUrPointerEventType::Moved
 		},
-		GetPointerModifiers(TouchEvent)
+		GetPointerModifiers(touchEvent)
 	);
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& InTouchEvent)
+FReply SUrBrowser::OnTouchEnded(const FGeometry& geometry, const FPointerEvent& touchEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
 
-	ActiveTouches.Remove(InTouchEvent.GetPointerIndex());
-	AssocBrows->SendTouchEvent(
+	ActiveTouches.Remove(touchEvent.GetPointerIndex());
+	assocBrowser->SendTouchEvent(
 		{
-			MyGeometry,
-			InTouchEvent,
+			geometry,
+			touchEvent,
 			EUrPointerEventType::Released
 		},
-		GetPointerModifiers(InTouchEvent)
+		GetPointerModifiers(touchEvent)
 	);
 	return FReply::Handled();
 }
@@ -313,27 +350,39 @@ bool SUrBrowser::SupportsKeyboardFocus() const
 	return true;
 }
 
-FReply SUrBrowser::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+FReply SUrBrowser::OnKeyDown(const FGeometry& geometry, const FKeyEvent& keyEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
-	AssocBrows->SendKeyEvent(InKeyEvent, false, GetModifiers(InKeyEvent));
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
+	assocBrowser->SendKeyEvent(keyEvent, false, GetModifiers(keyEvent));
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnKeyChar(const FGeometry& MyGeometry, const FCharacterEvent& InCharacterEvent)
+FReply SUrBrowser::OnKeyChar(const FGeometry& geometry, const FCharacterEvent& characterEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
-	AssocBrows->SendCharacterKey(InCharacterEvent, GetModifiers(InCharacterEvent));
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
+	assocBrowser->SendCharacterKey(characterEvent, GetModifiers(characterEvent));
 	return FReply::Handled();
 }
 
-FReply SUrBrowser::OnKeyUp(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+FReply SUrBrowser::OnKeyUp(const FGeometry& geometry, const FKeyEvent& keyEvent)
 {
-	auto AssocBrows = PersistentArgs._AssociatedBrowser.Get();
-	if (!AssocBrows.IsValid()) return FReply::Unhandled();
-	AssocBrows->SendKeyEvent(InKeyEvent, true, GetModifiers(InKeyEvent));
+	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
+	if (!assocBrowser.IsValid())
+	{
+		return FReply::Unhandled();
+	}
+	
+	assocBrowser->SendKeyEvent(keyEvent, true, GetModifiers(keyEvent));
 	return FReply::Handled();
 }
 
@@ -354,53 +403,61 @@ TSharedPtr<SWidget> SUrBrowser::CreatePopupWidget()
 	return OutWidget;
 }
 
-FVector2D SUrBrowser::GetUvFromScreenSpace(const FGeometry& Geom, FVector2D InPos)
+FVector2D SUrBrowser::GetUvFromScreenSpace(const FGeometry& geometry, FVector2D position)
 {
-	return Geom.AbsoluteToLocal(InPos) / Geom.GetLocalSize();
+	return geometry.AbsoluteToLocal(position) / geometry.GetLocalSize();
 }
 
-FVector2D SUrBrowser::GetUvFromBrowser(FVector2D InPos) const
+FVector2D SUrBrowser::GetUvFromBrowser(FVector2D position) const
 {
-	FVector2D Desired, Actual;
-	PersistentArgs._AssociatedBrowser.Get()->GetMainSize(Desired, Actual);
-	auto Uv = InPos / FVector2D(
-		FMath::Max(Actual.X, 1.0f),
-		FMath::Max(Actual.Y, 1.0f)
+	FVector2D desired, actual;
+	PersistentArgs._AssociatedBrowser.Get()->GetMainSize(desired, actual);
+	FVector2D uv = position / FVector2D(
+		FMath::Max(actual.X, 1.0f),
+		FMath::Max(actual.Y, 1.0f)
 	);
-	return Uv;
+	return uv;
 }
 
-FVector2D SUrBrowser::GetSizeForBrowserContent(const FGeometry& Geom)
+FVector2D SUrBrowser::GetSizeForBrowserContent(const FGeometry& geometry)
 {
-	auto Ret = Geom.GetAbsoluteSize();
-	return Ret;
+	return geometry.GetAbsoluteSize();
 }
 
-void SUrBrowser::HandleOnPopupShow(bool Show)
+void SUrBrowser::HandleOnPopupShow(bool show)
 {
-	if (Show && !PopupWidgetPersistent)
+	if (show && !PopupWidgetPersistent)
 	{
 		PopupWidgetPersistent = CreatePopupWidget();
 	}
 	else if(PersistentArgs._AutoRemovePopup.Get())
+	{
 		RemovePopupWidget();
+	}
 }
 
-void SUrBrowser::HandleOnPopupSize(FVector2D Location, FVector2D Size)
+void SUrBrowser::HandleOnPopupSize(FVector2D location, FVector2D size)
 {
-	auto LocalPos = GetUvFromBrowser(Location);
-	auto LocalSize = GetUvFromBrowser(Size);
-	LocalSize *= GetCachedGeometry().GetLocalSize();
+	FVector2D localPos = GetUvFromBrowser(location);
+	FVector2D localSize = GetUvFromBrowser(size);
+	localSize *= GetCachedGeometry().GetLocalSize();
 	if (PersistentArgs._AssociatedBrowser.Get()->GetNativePopupShown())
 	{
 		// I'm not trusting execution order of PopupShow and PopupSize events of CEF
-		if(!PopupWidgetPersistent) PopupWidgetPersistent = CreatePopupWidget();
-		if(!PopupWidgetPersistent) return;
+		if(!PopupWidgetPersistent)
+		{
+			PopupWidgetPersistent = CreatePopupWidget();
+		}
+		
+		if(!PopupWidgetPersistent)
+		{
+			return;
+		}
 
 		Layout->AddSlot()
-			. Anchors(FAnchors(LocalPos.X, LocalPos.Y, LocalPos.X, LocalPos.Y))
+			. Anchors(FAnchors(localPos.X, localPos.Y, localPos.X, localPos.Y))
 			. Alignment(FVector2D(0, 0))
-			. Offset(FMargin(0, 0, LocalSize.X, LocalSize.Y))
+			. Offset(FMargin(0, 0, localSize.X, localSize.Y))
 			. ZOrder(1.0f)
 			[ PopupWidgetPersistent.ToSharedRef() ];
 	}

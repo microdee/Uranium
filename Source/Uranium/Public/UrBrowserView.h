@@ -24,23 +24,23 @@ class UUrBrowserView;
 /**
  * Delegate to be executed just before the browser is ready, making place for some configuration.
  */
-DECLARE_DYNAMIC_DELEGATE_OneParam             (FOnBeforeCreatedDel, UUrBrowserView*, Browser);
+DECLARE_DYNAMIC_DELEGATE_OneParam             (FOnBeforeCreatedDel, UUrBrowserView*, browser);
 
 /**
  * Delegate to be executed after the browser is ready. This is executed before any content is loaded by the browser
  */
-DECLARE_DYNAMIC_DELEGATE_OneParam             (FOnAfterCreatedFuncDel, UUrBrowserView*, Browser);
+DECLARE_DYNAMIC_DELEGATE_OneParam             (FOnAfterCreatedFuncDel, UUrBrowserView*, browser);
 
 /**
  * Delegate to be executed after the browser is ready. This is executed before any content is loaded by the browser
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnAfterCreatedDel, UUrBrowserView*, Browser);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnAfterCreatedDel, UUrBrowserView*, browser);
 DECLARE_MULTICAST_DELEGATE_OneParam           (FOnAfterCreatedStaticDel, UUrBrowserView*);
 
 /**
  * Delegate to be executed before the browser closes, allowing for also destroying associated widgets
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnBeforeCloseDel, UUrBrowserView*, Browser);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnBeforeCloseDel, UUrBrowserView*, browser);
 DECLARE_MULTICAST_DELEGATE_OneParam           (FOnBeforeCloseStaticDel, UUrBrowserView*);
 
 /**
@@ -50,7 +50,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam           (FOnBeforeCloseStaticDel, UUrBrows
  * meanings they're called NativePopups in Uranium. Only one native popup should be ever
  * visible above the main HTML content
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnNativePopupShowDel, bool, Show);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnNativePopupShowDel, bool, show);
 DECLARE_MULTICAST_DELEGATE_OneParam           (FOnNativePopupShowStaticDel, bool);
 
 /**
@@ -60,7 +60,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam           (FOnNativePopupShowStaticDel, bool
  * meanings they're called NativePopups in Uranium Only one native popup should be ever
  * visible above the main HTML content
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams  (FOnNativePopupSizeDel, FVector2D, Location, FVector2D, Size);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams  (FOnNativePopupSizeDel, FVector2D, location, FVector2D, size);
 DECLARE_MULTICAST_DELEGATE_TwoParams          (FOnNativePopupSizeStaticDel, FVector2D, FVector2D);
 
 /**
@@ -71,7 +71,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams          (FOnNativePopupSizeStaticDel, FVec
  * It is the implementer's responsibility to listen to this event, create the appropriate widgets
  * either with or ignoring the metadata, then call |DeferredInit| on the new UrBrowser.
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams  (FOnNewWindowOpenedDel, UUrBrowserView*, Browser, FNewBrowserMetadata, NewBrowserMetadata);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams  (FOnNewWindowOpenedDel, UUrBrowserView*, browser, FNewBrowserMetadata, newBrowserMetadata);
 DECLARE_MULTICAST_DELEGATE_TwoParams          (FOnNewWindowOpenedStaticDel, UUrBrowserView*, FNewBrowserMetadata);
 
 /**
@@ -81,10 +81,10 @@ DECLARE_MULTICAST_DELEGATE_TwoParams          (FOnNewWindowOpenedStaticDel, UUrB
  * initialized with the size provided when calling |OpenDevToolsEmbedded|,
  * there's no need to call |DeferredInit|.
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnEmbeddedDevToolOpenedDel, UUrBrowserView*, Browser);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnEmbeddedDevToolOpenedDel, UUrBrowserView*, browser);
 DECLARE_MULTICAST_DELEGATE_OneParam           (FOnEmbeddedDevToolOpenedStaticDel, UUrBrowserView*);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnVirtualKeyboardRequestedDel, EUrTextInputMode, InputMode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnVirtualKeyboardRequestedDel, EUrTextInputMode, inputMode);
 DECLARE_MULTICAST_DELEGATE_OneParam           (FOnVirtualKeyboardRequestedStaticDel, EUrTextInputMode);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam   (FOnLoadEndDel, int, httpStatusCode);
@@ -137,34 +137,34 @@ enum class EUrPointerEventType : uint8
 
 namespace UraniumInput
 {
-	inline CefBrowserHost::MouseButtonType GetUraniumMouseButton(const FKey& Button)
+	inline CefBrowserHost::MouseButtonType GetUraniumMouseButton(const FKey& button)
 	{
-		if (Button == EKeys::LeftMouseButton) return MBT_LEFT;
-		if (Button == EKeys::RightMouseButton) return MBT_RIGHT;
-		if (Button == EKeys::MiddleMouseButton) return MBT_MIDDLE;
+		if (button == EKeys::LeftMouseButton) return MBT_LEFT;
+		if (button == EKeys::RightMouseButton) return MBT_RIGHT;
+		if (button == EKeys::MiddleMouseButton) return MBT_MIDDLE;
 		return MBT_LEFT;
 	}
 
-	inline bool IsValidMouseButton(const FKey& Button)
+	inline bool IsValidMouseButton(const FKey& button)
 	{
-		return Button == EKeys::LeftMouseButton
-			|| Button == EKeys::RightMouseButton
-			|| Button == EKeys::MiddleMouseButton;
+		return button == EKeys::LeftMouseButton
+			|| button == EKeys::RightMouseButton
+			|| button == EKeys::MiddleMouseButton;
 	}
 
-	inline cef_event_flags_t GetCefModifierFlagForKey(const FKey& Button)
+	inline cef_event_flags_t GetCefModifierFlagForKey(const FKey& button)
 	{
-		if (Button == EKeys::LeftShift || Button == EKeys::RightShift)
+		if (button == EKeys::LeftShift || button == EKeys::RightShift)
 			return EVENTFLAG_SHIFT_DOWN;
-		if (Button == EKeys::LeftControl || Button == EKeys::RightControl)
+		if (button == EKeys::LeftControl || button == EKeys::RightControl)
 			return EVENTFLAG_CONTROL_DOWN;
-		if (Button == EKeys::LeftAlt) return EVENTFLAG_ALT_DOWN;
-		if (Button == EKeys::LeftMouseButton) return EVENTFLAG_LEFT_MOUSE_BUTTON;
-		if (Button == EKeys::MiddleMouseButton) return EVENTFLAG_MIDDLE_MOUSE_BUTTON;
-		if (Button == EKeys::RightMouseButton) return EVENTFLAG_RIGHT_MOUSE_BUTTON;
-		if (Button == EKeys::LeftCommand || Button == EKeys::RightCommand)
+		if (button == EKeys::LeftAlt) return EVENTFLAG_ALT_DOWN;
+		if (button == EKeys::LeftMouseButton) return EVENTFLAG_LEFT_MOUSE_BUTTON;
+		if (button == EKeys::MiddleMouseButton) return EVENTFLAG_MIDDLE_MOUSE_BUTTON;
+		if (button == EKeys::RightMouseButton) return EVENTFLAG_RIGHT_MOUSE_BUTTON;
+		if (button == EKeys::LeftCommand || button == EKeys::RightCommand)
 			return EVENTFLAG_COMMAND_DOWN;
-		if (Button == EKeys::RightAlt) return EVENTFLAG_ALTGR_DOWN;
+		if (button == EKeys::RightAlt) return EVENTFLAG_ALTGR_DOWN;
 		return EVENTFLAG_NONE;
 	}
 }
@@ -191,38 +191,38 @@ struct FUraniumPointerEvent
 	}
 
 	FUraniumPointerEvent(
-		const FGeometry& Geom,
-		const FPointerEvent& InEvent,
-		EUrPointerEventType EventType,
-		EUrPointerType PointerType = EUrPointerType::Touch
-	)   : Id(static_cast<ETouchIndex::Type>(InEvent.GetPointerIndex()))
-		, Location(Geom.AbsoluteToLocal(InEvent.GetScreenSpacePosition()) / Geom.GetLocalSize())
+		const FGeometry& geometry,
+		const FPointerEvent& inEvent,
+		EUrPointerEventType eventType,
+		EUrPointerType pointerType = EUrPointerType::Touch
+	)   : Id(static_cast<ETouchIndex::Type>(inEvent.GetPointerIndex()))
+		, Location(geometry.AbsoluteToLocal(inEvent.GetScreenSpacePosition()) / geometry.GetLocalSize())
 		, Size(FVector2D::ZeroVector)
 		, IsUVSpace(true)
 		, RotationDegrees(0.0f)
-		, Pressure(InEvent.GetTouchForce())
-		, EventType(EventType)
-		, PointerType(PointerType)
+		, Pressure(inEvent.GetTouchForce())
+		, EventType(eventType)
+		, PointerType(pointerType)
 	{
 	}
 
 	FUraniumPointerEvent(
-		uint32 Id,
-		const FVector2D& Location,
-		const FVector2D& Size,
-		bool bIsUVSpace,
-		float RotationDegrees,
-		float Pressure,
-		EUrPointerEventType EventType,
-		EUrPointerType PointerType
-	)   : Id(static_cast<ETouchIndex::Type>(Id))
-		, Location(Location)
-		, Size(Size)
-		, IsUVSpace(bIsUVSpace)
-		, RotationDegrees(RotationDegrees)
-		, Pressure(Pressure)
-		, EventType(EventType)
-		, PointerType(PointerType)
+		uint32 id,
+		const FVector2D& location,
+		const FVector2D& size,
+		bool isUVSpace,
+		float rotationDegrees,
+		float pressure,
+		EUrPointerEventType eventType,
+		EUrPointerType pointerType
+	)   : Id(static_cast<ETouchIndex::Type>(id))
+		, Location(location)
+		, Size(size)
+		, IsUVSpace(isUVSpace)
+		, RotationDegrees(rotationDegrees)
+		, Pressure(pressure)
+		, EventType(eventType)
+		, PointerType(pointerType)
 	{
 	}
 
@@ -269,38 +269,38 @@ private:
 	void OnBeforeCloseInternal();
 
 	template<typename TCefEvent>
-	static void GetModifierKeys(const FInputEvent& ueKey, TCefEvent& cefKey, const FCefKeyEventFlags& ExtraFlags)
+	static void GetModifierKeys(const FInputEvent& ueKey, TCefEvent& cefKey, const FCefKeyEventFlags& extraFlags)
 	{
 		// as of cef_event_flags_t
 		cefKey.modifiers = ueKey.AreCapsLocked() << 0
 			| ueKey.IsShiftDown() << 1
 			| ueKey.IsControlDown() << 2
 			| ueKey.IsLeftAltDown() << 3
-			| ExtraFlags.LeftMouseButton << 4
-			| ExtraFlags.MiddleMouseButton << 5
-			| ExtraFlags.RightMouseButton << 6
+			| extraFlags.LeftMouseButton << 4
+			| extraFlags.MiddleMouseButton << 5
+			| extraFlags.RightMouseButton << 6
 			| ueKey.IsCommandDown() << 7
-			| ExtraFlags.NumLocked << 8
-			| ExtraFlags.IsKeypad << 9
-			| ExtraFlags.Left << 10
-			| ExtraFlags.Right << 11
+			| extraFlags.NumLocked << 8
+			| extraFlags.IsKeypad << 9
+			| extraFlags.Left << 10
+			| extraFlags.Right << 11
 			| ueKey.IsRightAltDown() << 12
-			| ExtraFlags.OrFlag;
+			| extraFlags.OrFlag;
 	}
 
-	static FCefKeyEventFlags EnforceFlagsFromEvent(const FInputEvent& ueKey, FCefKeyEventFlags ExtraFlags)
+	static FCefKeyEventFlags EnforceFlagsFromEvent(const FInputEvent& ueKey, FCefKeyEventFlags extraFlags)
 	{
-		ExtraFlags.CapsLocked = ueKey.AreCapsLocked();
-		ExtraFlags.ShiftDown = ueKey.IsShiftDown();
-		ExtraFlags.ControlDown = ueKey.IsControlDown();
-		ExtraFlags.AltDown = ueKey.IsLeftAltDown();
-		ExtraFlags.CommandDown = ueKey.IsCommandDown();
-		ExtraFlags.AltGrDown = ueKey.IsRightAltDown();
-		return ExtraFlags;
+		extraFlags.CapsLocked = ueKey.AreCapsLocked();
+		extraFlags.ShiftDown = ueKey.IsShiftDown();
+		extraFlags.ControlDown = ueKey.IsControlDown();
+		extraFlags.AltDown = ueKey.IsLeftAltDown();
+		extraFlags.CommandDown = ueKey.IsCommandDown();
+		extraFlags.AltGrDown = ueKey.IsRightAltDown();
+		return extraFlags;
 	}
 
 
-	CefMouseEvent GetCefMouseEvent(FVector2D Location, bool UVSpace, const FCefKeyEventFlags& Modifiers) const;
+	CefMouseEvent GetCefMouseEvent(FVector2D location, bool uvSpace, const FCefKeyEventFlags& modifiers) const;
 
 	UPROPERTY()
 	TScriptInterface<ISharedTexture> MainTexture;
@@ -315,7 +315,7 @@ private:
 
 public:
 
-	UUrBrowserView(const FObjectInitializer& Oi);
+	UUrBrowserView(const FObjectInitializer& oi);
 
 	/**
 	 * Browsers created as "new windows" from this browser.
@@ -358,9 +358,7 @@ public:
 	 * a chance to configure it before committing to initialization. This allows to have a
 	 * completely detached Slate widget using the managed browser wrapper.
 	 */
-	static UUrBrowserView* CreateNew(
-		UObject* worldContext
-	);
+	static UUrBrowserView* CreateNew(UObject* worldContext);
 
 	/**
 	 * Creates a new wrapper object but doesn't yet create an instance of the wrapping CEF browser view
@@ -392,8 +390,8 @@ public:
 	 * no CEF browsers are actually created.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void DeferredInit(FVector2D InitialSize, FString Url);
-	void DeferredInit(UCefBrowserManagedRef* FromInstance);
+	void DeferredInit(FVector2D initialSize, FString url);
+	void DeferredInit(UCefBrowserManagedRef* fromInstance);
 
 	/**
 	 * Explicitly close this browser and release resources. Automatically called on BeginDestroy too.
@@ -557,17 +555,17 @@ public:
 
 	// TODO: see implementation
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void LoadHtml(const FHtmlContent& HtmlContent);
+	void LoadHtml(const FHtmlContent& htmlContent);
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void ExecuteJavaScript(FString Code, FString ScriptUrl, int StartLine = 0);
+	void ExecuteJavaScript(FString code, FString scriptUrl, int startLine = 0);
 
 	UFUNCTION(BlueprintPure, Category = "Uranium")
 	FString GetURL() const;
 
 	// TODO: document / implement the formula between CEF zoom and percentage
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SetZoomLevel(float Zoom);
+	void SetZoomLevel(float zoom);
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
 	void GoBack();
@@ -586,21 +584,21 @@ public:
 
 	/**
 	 * Show the DevTools of Chromium in a separate window.
-	 * @param InspectElementAt  Optional pixel coordinates from top-left for picking an HTML
+	 * @param inspectElementAt  Optional pixel coordinates from top-left for picking an HTML
 	 *                          Element for inspection in the DOM viewer.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void ShowDevToolsWindow(FVector2D InspectElementAt);
+	void ShowDevToolsWindow(FVector2D inspectElementAt);
 
 	/**
 	 * Show the DevTools of Chromium in a new UrBrowserView instance. Listen on
 	 * |OnEmbeddedDevToolOpened| event to manage its rendering in UE4
-	 * @param InspectElementAt  Optional pixel coordinates from top-left for picking an HTML
+	 * @param inspectElementAt  Optional pixel coordinates from top-left for picking an HTML
 	 *                          Element for inspection in the DOM viewer.
-	 * @param Size              The desired size of the containing Uranium browser
+	 * @param size              The desired size of the containing Uranium browser
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void ShowDevToolsEmbedded(FVector2D InspectElementAt, FVector2D Size);
+	void ShowDevToolsEmbedded(FVector2D inspectElementAt, FVector2D size);
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
 	void CloseDevTools();
@@ -609,38 +607,38 @@ public:
 	bool HasDevTools() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SetAudioMuted(bool Mute);
+	void SetAudioMuted(bool mute);
 
 	UFUNCTION(BlueprintPure, Category = "Uranium")
 	bool IsAudioMuted() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SendKeyEvent(FKeyEvent Event, bool IsUp, FCefKeyEventFlags Modifiers);
+	void SendKeyEvent(FKeyEvent event, bool isUp, FCefKeyEventFlags modifiers);
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SendKey(int WindowsKeyCode, FString Character, bool IsUp, FCefKeyEventFlags Modifiers);
+	void SendKey(int windowsKeyCode, FString character, bool isUp, FCefKeyEventFlags modifiers);
 	
-	void SendKeyEventKc(uint32 KeyCode, TCHAR Char, bool IsSysKey, bool IsUp, FCefKeyEventFlags Modifiers);
+	void SendKeyEventKc(uint32 keyCode, TCHAR character, bool isSysKey, bool isUp, FCefKeyEventFlags modifiers);
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SendCharacterKey(FCharacterEvent Event, FCefKeyEventFlags Modifiers);
+	void SendCharacterKey(FCharacterEvent event, FCefKeyEventFlags modifiers);
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SendKeyString(FString Input, FCefKeyEventFlags Modifiers);
+	void SendKeyString(FString input, FCefKeyEventFlags modifiers);
 
-	void SendCharKc(TCHAR Char, bool IsSysKey, FCefKeyEventFlags Modifiers);
+	void SendCharKc(TCHAR character, bool isSysKey, FCefKeyEventFlags modifiers);
 
-
-	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SendMouseMove(FVector2D Location, bool UVSpace, bool bLeaving, FCefKeyEventFlags Modifiers);
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SendMouseButton(FVector2D Location, bool UVSpace, const FKey& Button, bool isUp, FCefKeyEventFlags Modifiers);
+	void SendMouseMove(FVector2D location, bool uvSpace, bool leaving, FCefKeyEventFlags modifiers);
+
+	UFUNCTION(BlueprintCallable, Category = "Uranium")
+	void SendMouseButton(FVector2D location, bool uvSpace, const FKey& button, bool isUp, FCefKeyEventFlags modifiers);
 	
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SendMouseWheel(FVector2D Location, bool UVSpace, FVector2D WheelDelta, FCefKeyEventFlags Modifiers);
+	void SendMouseWheel(FVector2D location, bool uvSpace, FVector2D wheelDelta, FCefKeyEventFlags modifiers);
 
 
 	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	void SendTouchEvent(FUraniumPointerEvent Event, FCefKeyEventFlags Modifiers);
+	void SendTouchEvent(FUraniumPointerEvent event, FCefKeyEventFlags modifiers);
 };

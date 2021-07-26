@@ -16,13 +16,13 @@ struct FUraniumSwitch
 		, HasValue(false)
 		, Value("") {}
 
-	FUraniumSwitch(FString switch_name)
-		: Switch(switch_name)
+	FUraniumSwitch(FString switchName)
+		: Switch(switchName)
 		, HasValue(false)
 		, Value("") {}
 
-	FUraniumSwitch(FString switch_name, FString val)
-		: Switch(switch_name)
+	FUraniumSwitch(FString switchName, FString val)
+		: Switch(switchName)
 		, HasValue(true)
 		, Value(val) {}
 

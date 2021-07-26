@@ -4,7 +4,17 @@
 
 #include "CoreMinimal.h"
 
+THIRD_PARTY_INCLUDES_START
+#include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/AllowWindowsPlatformAtomics.h"
+#include "Windows/PreWindowsApi.h"
+
 #include <dxgiformat.h>
+
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformAtomics.h"
+#include "Windows/HideWindowsPlatformTypes.h"
+THIRD_PARTY_INCLUDES_END
 
 #include "CefCompat.h"
 
@@ -39,17 +49,17 @@ public:
 	FName TextureName = NAME_None;
 
 	virtual void Initialize() { }
-	virtual void OnAcceleratedPaint(void* Handle) { }
+	virtual void OnAcceleratedPaint(void* handle) { }
 	virtual void Render() { }
-	virtual void InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat) { }
+	virtual void InvalidateUeResources(int width, int height, EPixelFormat format) { }
 	virtual bool IsApplicable() { return false; }
 	virtual bool NeedsImmediateGfxContext() { return false; }
 	virtual IImGfxCtx* GetImmediateGfxContext() { return nullptr; }
 	virtual UTexture2D* GetTexture() { return nullptr; }
 
 	static FString CurrentRHI();
-	static EPixelFormat FromDXGIFormat(DXGI_FORMAT InFormat);
-	static DXGI_FORMAT FromUEFormat(EPixelFormat InFormat);
+	static EPixelFormat FromDXGIFormat(DXGI_FORMAT format);
+	static DXGI_FORMAT FromUEFormat(EPixelFormat format);
 
 	static TScriptInterface<ISharedTexture> CreateSharedTexture();
 };

@@ -18,5 +18,5 @@ public:
 
 	CefRefPtr<FCefBrowserView> Obj;
 
-	bool IsAvailable(bool bCheckBrowserReady = true);
+	bool IsAvailable(bool checkBrowserReady = true);
 };

@@ -5,134 +5,148 @@
 
 #include "Uranium.h"
 
-void FObjectTraversalState::Add(UObject* InObject, CefRefPtr<CefDictionaryValue> InValue)
+void FObjectTraversalState::Add(UObject* object, CefRefPtr<CefDictionaryValue> value)
 {
-	ObjectValueAssoc.Add(InObject, InValue);
-	ValueObjectAssoc.Add(InValue.get(), InObject);
+	ObjectValueAssoc.Add(object, value);
+	ValueObjectAssoc.Add(value.get(), object);
 }
 
 FPinObjects::FPinObjects()
 {
 }
 
-FPinObjects::FPinObjects(TWeakObjectPtr<UObject> InObject)
+FPinObjects::FPinObjects(TWeakObjectPtr<UObject> object)
 {
-	if(InObject.IsValid()) With(InObject.Get());
+	if(object.IsValid())
+	{
+		With(object.Get());
+	}
 }
 
-FPinObjects::FPinObjects(UObject* InObject)
+FPinObjects::FPinObjects(UObject* object)
 {
-	With(InObject);
+	With(object);
 }
 
-void FPinObjects::With(UObject* InObject)
+void FPinObjects::With(UObject* object)
 {
-	if(!InObject->IsValidLowLevel()) return;
-	if(InObject->IsRooted()) return;
-	InObject->AddToRoot();
-	Objects.Add(InObject);
+	if(!object->IsValidLowLevel())
+	{
+		return;
+	}
+	if(object->IsRooted())
+	{
+		return;
+	}
+	
+	object->AddToRoot();
+	Objects.Add(object);
 }
 
 FPinObjects::~FPinObjects()
 {
-	for(auto Obj : Objects)
+	for(auto obj : Objects)
 	{
-		Obj->RemoveFromRoot();
+		obj->RemoveFromRoot();
 	}
 }
 
-CefRefPtr<CefDictionaryValue> FCefJsObjectSerializer::ToCefValue(TWeakObjectPtr<UObject> From)
+CefRefPtr<CefDictionaryValue> FCefJsObjectSerializer::ToCefValue(TWeakObjectPtr<UObject> from)
 {
-	auto CefMap = CefDictionaryValue::Create();
-	if(From.IsValid())
+	auto cefMap = CefDictionaryValue::Create();
+	if(from.IsValid())
 	{
-		FPinObjects Pin(From);
-		FObjectTraversalState Traversal {};
+		FPinObjects pin(from);
+		FObjectTraversalState traversal {};
 
 		for(
-			TPropertyValueIterator<FProperty> It(
-				From->GetClass(),
-				From.Get(),
+			TPropertyValueIterator<FProperty> it(
+				from->GetClass(),
+				from.Get(),
 				EPropertyValueIteratorFlags::NoRecursion,
 				EFieldIteratorFlags::ExcludeDeprecated
 			);
-			It; ++It
+			it; ++it
 		) {
-			auto Prop = It.Key();
-			auto Val = It.Value();
-			CefMap->SetValue(*Prop->GetName(), FieldToCefValue(Prop, Val, Traversal));
+			FProperty* prop = it.Key();
+			const void* val = it.Value();
+			cefMap->SetValue(*prop->GetName(), FieldToCefValue(prop, val, traversal));
 		}
 	}
-	return CefMap;
+	return cefMap;
 }
 
-void FCefJsObjectSerializer::ToUObject(TWeakObjectPtr<UObject> Target, CefRefPtr<CefDictionaryValue> From)
+void FCefJsObjectSerializer::ToUObject(TWeakObjectPtr<UObject> target, CefRefPtr<CefDictionaryValue> from)
 {
-	if(Target.IsValid())
+	if(target.IsValid())
 	{
-		FPinObjects Pin(Target);
-		FObjectTraversalState Traversal {};
+		FPinObjects pin(target);
+		FObjectTraversalState traversal {};
 
 		for(
-			TPropertyValueIterator<FProperty> It(
-				Target->GetClass(),
-				Target.Get(),
+			TPropertyValueIterator<FProperty> it(
+				target->GetClass(),
+				target.Get(),
 				EPropertyValueIteratorFlags::NoRecursion,
 				EFieldIteratorFlags::ExcludeDeprecated
 			);
-			It; ++It
+			it; ++it
 		)
 		{
-			auto Prop = It.Key();
+			FProperty* prop = it.Key();
 		
 			// removing constness in the hope that modifying the value ptr will not cause issues
 			// just like everywhere else regarding working with property values
-			auto Val = const_cast<void*>(It.Value());
+			void* val = const_cast<void*>(it.Value());
 			
 			CefValueToField(
-				Prop, Val,
-				From->GetValue(*Prop->GetName()),
-				Traversal, Pin, Target.Get()
+				prop, val,
+				from->GetValue(*prop->GetName()),
+				traversal, pin, target.Get()
 			);
 		}
 	}
 }
 
-bool IsStringProperty(FField* InField)
+bool IsStringProperty(FField* field)
 {
-	if(!InField->IsValidLowLevel()) return false;
-	return InField->IsA<FStrProperty>()
-		|| InField->IsA<FTextProperty>()
-		|| InField->IsA<FNameProperty>();
+	if(!field->IsValidLowLevel())
+	{
+		return false;
+	}
+	
+	return field->IsA<FStrProperty>()
+		|| field->IsA<FTextProperty>()
+		|| field->IsA<FNameProperty>();
 }
 
-bool IsStringOrEnumProperty(FField* InField)
+bool IsStringOrEnumProperty(FField* field)
 {
-	return IsStringProperty(InField)
-		|| InField->IsA<FEnumProperty>();
+	return IsStringProperty(field)
+		|| field->IsA<FEnumProperty>();
 }
 
-FString GetValueOfStringProperty(FField* InField, const void* ValuePtr)
+FString GetValueOfStringProperty(FField* field, const void* valuePtr)
 {
 	// ReSharper disable CppDeclarationHidesLocal
 	// ReSharper disable CppLocalVariableMayBeConst
-#pragma warning( suppress : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
-	if(auto Prop = CastField<FStrProperty>(InField))
+#pragma warning( disable : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
+	if(auto prop = CastField<FStrProperty>(field))
 	{
-		return Prop->GetPropertyValue(ValuePtr);
+		return prop->GetPropertyValue(valuePtr);
 	}
-	if(auto Prop = CastField<FTextProperty>(InField))
+	if(auto prop = CastField<FTextProperty>(field))
 	{
-		return Prop->GetPropertyValue(ValuePtr).ToString();
+		return prop->GetPropertyValue(valuePtr).ToString();
 	}
-	if(auto Prop = CastField<FNameProperty>(InField))
+	if(auto prop = CastField<FNameProperty>(field))
 	{
-		return Prop->GetPropertyValue(ValuePtr).ToString();
+		return prop->GetPropertyValue(valuePtr).ToString();
 	}
-	if(auto Prop = CastField<FEnumProperty>(InField))
+	if(auto prop = CastField<FEnumProperty>(field))
 	{
-		auto Val = Prop->GetUnderlyingProperty()->GetSignedIntPropertyValue(ValuePtr);
-		auto Name = Prop->GetEnum()->GetNameByIndex(Val);
+		int64 Val = prop->GetUnderlyingProperty()->GetSignedIntPropertyValue(valuePtr);
+		FName Name = prop->GetEnum()->GetNameByIndex(Val);
 		return Name.ToString();
 	}
 #pragma warning( default : 4456 )
@@ -142,29 +156,29 @@ FString GetValueOfStringProperty(FField* InField, const void* ValuePtr)
 	return {};
 }
 
-void SetValueOfStringProperty(FField* InField, void* ValuePtr, CefRefPtr<CefValue> Input)
+void SetValueOfStringProperty(FField* field, void* valuePtr, CefRefPtr<CefValue> input)
 {
 	// ReSharper disable CppDeclarationHidesLocal
 	// ReSharper disable CppLocalVariableMayBeConst
-#pragma warning( suppress : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
-	FString InputStr(Input->GetString().c_str());
-	if(auto Prop = CastField<FStrProperty>(InField))
+#pragma warning( disable : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
+	FString InputStr(input->GetString().c_str());
+	if(auto prop = CastField<FStrProperty>(field))
 	{
-		Prop->SetPropertyValue(ValuePtr, InputStr);
+		prop->SetPropertyValue(valuePtr, InputStr);
 	}
-	else if(auto Prop = CastField<FTextProperty>(InField))
+	else if(auto prop = CastField<FTextProperty>(field))
 	{
-		Prop->SetPropertyValue(ValuePtr, FText::FromString(InputStr));
+		prop->SetPropertyValue(valuePtr, FText::FromString(InputStr));
 	}
-	else if(auto Prop = CastField<FNameProperty>(InField))
+	else if(auto prop = CastField<FNameProperty>(field))
 	{
-		Prop->SetPropertyValue(ValuePtr, FName(*InputStr));
+		prop->SetPropertyValue(valuePtr, FName(*InputStr));
 	}
-	else if(auto Prop = CastField<FEnumProperty>(InField))
+	else if(auto prop = CastField<FEnumProperty>(field))
 	{
-		auto ValProp = Prop->GetUnderlyingProperty();
-		int ValId = Prop->GetEnum()->GetIndexByName(FName(*InputStr));
-		ValProp->SetIntPropertyValue(ValuePtr, static_cast<int64>(ValId));
+		FNumericProperty* valProp = prop->GetUnderlyingProperty();
+		int valId = prop->GetEnum()->GetIndexByName(FName(*InputStr));
+		valProp->SetIntPropertyValue(valuePtr, static_cast<int64>(valId));
 	}
 #pragma warning( default : 4456 )
 	// ReSharper restore CppLocalVariableMayBeConst
@@ -172,74 +186,74 @@ void SetValueOfStringProperty(FField* InField, void* ValuePtr, CefRefPtr<CefValu
 }
 
 CefRefPtr<CefValue> FCefJsObjectSerializer::FieldToCefValue(
-	FField* InField,
-	const void* ValuePtr,
-	FObjectTraversalState& Traversal
+	FField* field,
+	const void* valuePtr,
+	FObjectTraversalState& traversal
 ) {
-	CefRefPtr<CefValue> Target = CefValue::Create();
+	CefRefPtr<CefValue> target = CefValue::Create();
 	
 	// Field is valid?
-	if(!ValuePtr || !InField->IsValidLowLevel())
+	if(!valuePtr || !field->IsValidLowLevel())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Value or field was nullptr"));
-		Target->SetNull();
-		return Target;
+		target->SetNull();
+		return target;
 	}
 
 	// ReSharper disable CppDeclarationHidesLocal
 	// ReSharper disable CppLocalVariableMayBeConst
-#pragma warning( suppress : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
-	if(auto Prop = CastField<FBoolProperty>(InField))
+#pragma warning( disable : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
+	if(auto prop = CastField<FBoolProperty>(field))
 	{
-		Target->SetBool(Prop->GetPropertyValue(ValuePtr));
+		target->SetBool(prop->GetPropertyValue(valuePtr));
 	}
-	else if(auto Prop = CastField<FNumericProperty>(InField))
+	else if(auto prop = CastField<FNumericProperty>(field))
 	{
-		if(Prop->IsInteger())
-			Target->SetInt(Prop->GetSignedIntPropertyValue(ValuePtr));
-		if(Prop->IsFloatingPoint())
-			Target->SetDouble(Prop->GetFloatingPointPropertyValue(ValuePtr));
+		if(prop->IsInteger())
+			target->SetInt(prop->GetSignedIntPropertyValue(valuePtr));
+		if(prop->IsFloatingPoint())
+			target->SetDouble(prop->GetFloatingPointPropertyValue(valuePtr));
 	}
-	else if(IsStringOrEnumProperty(InField))
+	else if(IsStringOrEnumProperty(field))
 	{
-		Target->SetString(*GetValueOfStringProperty(InField, ValuePtr));
+		target->SetString(*GetValueOfStringProperty(field, valuePtr));
 	}
-	else if(auto Prop = CastField<FObjectProperty>(InField))
+	else if(auto prop = CastField<FObjectProperty>(field))
 	{
-		ObjectPropertyToCefValue(Target, Prop, ValuePtr, Traversal);
+		ObjectPropertyToCefValue(target, prop, valuePtr, traversal);
 	}
-	else if(auto Prop = CastField<FStructProperty>(InField))
+	else if(auto prop = CastField<FStructProperty>(field))
 	{
-		StructPropertyToCefValue(Target, Prop, ValuePtr, Traversal);
+		StructPropertyToCefValue(target, prop, valuePtr, traversal);
 	}
-	else if(auto Prop = CastField<FMapProperty>(InField))
+	else if(auto prop = CastField<FMapProperty>(field))
 	{
-		MapPropertyToCefValue(Target, Prop, ValuePtr, Traversal);
+		MapPropertyToCefValue(target, prop, valuePtr, traversal);
 	}
-	else if(auto Prop = CastField<FSetProperty>(InField))
+	else if(auto prop = CastField<FSetProperty>(field))
 	{
-		SetPropertyToCefValue(Target, Prop, ValuePtr, Traversal);
+		SetPropertyToCefValue(target, prop, valuePtr, traversal);
 	}
-	else if(auto Prop = CastField<FArrayProperty>(InField))
+	else if(auto prop = CastField<FArrayProperty>(field))
 	{
-		ArrayPropertyToCefValue(Target, Prop, ValuePtr, Traversal);
+		ArrayPropertyToCefValue(target, prop, valuePtr, traversal);
 	}
 #pragma warning( default : 4456 )
 	// ReSharper restore CppLocalVariableMayBeConst
 	// ReSharper restore CppDeclarationHidesLocal
 	
-	return Target;
+	return target;
 }
 
 void FCefJsObjectSerializer::CefValueToField(
-	FField* InField,
-	void* ValuePtr,
-	CefRefPtr<CefValue> Input,
-	FObjectTraversalState& Traversal,
-	FPinObjects& Pins,
-	UObject* RootObj
+	FField* field,
+	void* valuePtr,
+	CefRefPtr<CefValue> input,
+	FObjectTraversalState& traversal,
+	FPinObjects& pins,
+	UObject* rootObj
 ) {
-	if(!ValuePtr || !InField->IsValidLowLevel())
+	if(!valuePtr || !field->IsValidLowLevel())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Value destination or field was nullptr"));
 		return;
@@ -247,41 +261,45 @@ void FCefJsObjectSerializer::CefValueToField(
 
 	// ReSharper disable CppDeclarationHidesLocal
 	// ReSharper disable CppLocalVariableMayBeConst
-#pragma warning( suppress : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
-	if(auto Prop = CastField<FBoolProperty>(InField))
+#pragma warning( disable : 4456 ) // declaration of 'X' hides previous local declaration // it's intentional here
+	if(auto prop = CastField<FBoolProperty>(field))
 	{
-		Prop->SetPropertyValue(ValuePtr, Input->GetBool());
+		prop->SetPropertyValue(valuePtr, input->GetBool());
 	}
-	else if(auto Prop = CastField<FNumericProperty>(InField))
+	else if(auto prop = CastField<FNumericProperty>(field))
 	{
-		if(Prop->IsInteger())
-			Prop->SetIntPropertyValue(ValuePtr, static_cast<int64>(Input->GetInt()));
-		if(Prop->IsFloatingPoint())
-			Prop->SetFloatingPointPropertyValue(ValuePtr, Input->GetDouble());
+		if(prop->IsInteger())
+		{
+			prop->SetIntPropertyValue(valuePtr, static_cast<int64>(input->GetInt()));
+		}
+		if(prop->IsFloatingPoint())
+		{
+			prop->SetFloatingPointPropertyValue(valuePtr, input->GetDouble());
+		}
 	}
-	else if(IsStringOrEnumProperty(InField))
+	else if(IsStringOrEnumProperty(field))
 	{
-		SetValueOfStringProperty(InField, ValuePtr, Input);
+		SetValueOfStringProperty(field, valuePtr, input);
 	}
-	else if(auto Prop = CastField<FObjectProperty>(InField))
+	else if(auto prop = CastField<FObjectProperty>(field))
 	{
-		CefValueToObjectProperty(Prop, ValuePtr, Input, Traversal, Pins, RootObj);
+		CefValueToObjectProperty(prop, valuePtr, input, traversal, pins, rootObj);
 	}
-	else if(auto Prop = CastField<FStructProperty>(InField))
+	else if(auto prop = CastField<FStructProperty>(field))
 	{
-		CefValueToStructProperty(Prop, ValuePtr, Input, Traversal, Pins, RootObj);
+		CefValueToStructProperty(prop, valuePtr, input, traversal, pins, rootObj);
 	}
-	else if(auto Prop = CastField<FMapProperty>(InField))
+	else if(auto prop = CastField<FMapProperty>(field))
 	{
-		CefValueToMapProperty(Prop, ValuePtr, Input, Traversal, Pins, RootObj);
+		CefValueToMapProperty(prop, valuePtr, input, traversal, pins, rootObj);
 	}
-	else if(auto Prop = CastField<FSetProperty>(InField))
+	else if(auto prop = CastField<FSetProperty>(field))
 	{
-		CefValueToSetProperty(Prop, ValuePtr, Input, Traversal, Pins, RootObj);
+		CefValueToSetProperty(prop, valuePtr, input, traversal, pins, rootObj);
 	}
-	else if(auto Prop = CastField<FArrayProperty>(InField))
+	else if(auto prop = CastField<FArrayProperty>(field))
 	{
-		CefValueToArrayProperty(Prop, ValuePtr, Input, Traversal, Pins, RootObj);
+		CefValueToArrayProperty(prop, valuePtr, input, traversal, pins, rootObj);
 	}
 #pragma warning( default : 4456 )
 	// ReSharper restore CppLocalVariableMayBeConst
@@ -289,155 +307,154 @@ void FCefJsObjectSerializer::CefValueToField(
 }
 
 void FCefJsObjectSerializer::ObjectPropertyToCefValue(
-	CefRefPtr<CefValue> Target,
-	FObjectProperty* InProp,
-	const void* ValuePtr,
-	FObjectTraversalState& Traversal
+	CefRefPtr<CefValue> target,
+	FObjectProperty* inProp,
+	const void* valuePtr,
+	FObjectTraversalState& traversal
 ) {
-	auto Obj = InProp->GetObjectPropertyValue(ValuePtr);
-	if(!Obj->IsValidLowLevel())
+	UObject* obj = inProp->GetObjectPropertyValue(valuePtr);
+	if(!obj->IsValidLowLevel())
 	{
-		Target->SetNull();
+		target->SetNull();
 		return;
 	}
 
 	// We've seen this object before
-	if(Traversal.ObjectValueAssoc.Contains(Obj))
+	if(traversal.ObjectValueAssoc.Contains(obj))
 	{
-		Target->SetDictionary(Traversal.ObjectValueAssoc[Obj]);
+		target->SetDictionary(traversal.ObjectValueAssoc[obj]);
 		return;
 	}
 	
 	auto CefMap = CefDictionaryValue::Create();
-	Traversal.Add(Obj, CefMap);
+	traversal.Add(obj, CefMap);
 
 	for(
-		TPropertyValueIterator<FProperty> It(
-			Obj->GetClass(),
-			Obj,
+		TPropertyValueIterator<FProperty> it(
+			obj->GetClass(),
+			obj,
 			EPropertyValueIteratorFlags::NoRecursion,
 			EFieldIteratorFlags::ExcludeDeprecated
 		);
-		It; ++It
+		it; ++it
 	) {
-		auto Prop = It.Key();
-		auto Val = It.Value();
-		CefMap->SetValue(*Prop->GetName(), FieldToCefValue(Prop, Val, Traversal));
+		FProperty* prop = it.Key();
+		const void* val = it.Value();
+		CefMap->SetValue(*prop->GetName(), FieldToCefValue(prop, val, traversal));
 	}
 	
-	Target->SetDictionary(CefMap);
+	target->SetDictionary(CefMap);
 }
 
 void FCefJsObjectSerializer::CefValueToObjectProperty(
-	FObjectProperty* InProp,
-	void* ValuePtr,
-	CefRefPtr<CefValue> Input,
-	FObjectTraversalState& Traversal,
-	FPinObjects& Pins,
-	UObject* RootObj
+	FObjectProperty* inProp,
+	void* valuePtr,
+	CefRefPtr<CefValue> input,
+	FObjectTraversalState& traversal,
+	FPinObjects& pins,
+	UObject* rootObj
 ) {
-	if(!ValuePtr || !InProp->IsValidLowLevel())
+	if(!valuePtr || !inProp->IsValidLowLevel())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Object value destination or field was nullptr"));
 		return;
 	}
-	auto Obj = InProp->GetObjectPropertyValue(ValuePtr);
-	auto CefMap = Input->GetDictionary();
+	UObject* obj = inProp->GetObjectPropertyValue(valuePtr);
+	auto cefMap = input->GetDictionary();
 
 	// If input CEF Value is not a dictionary then assume null
-	if(!CefMap)
+	if(!cefMap)
 	{
-		InProp->SetObjectPropertyValue(ValuePtr, nullptr);
+		inProp->SetObjectPropertyValue(valuePtr, nullptr);
 		return;
 	}
 
 	// We've seen this object before
-	if(Traversal.ValueObjectAssoc.Contains(CefMap.get()))
+	if(traversal.ValueObjectAssoc.Contains(cefMap.get()))
 	{
-		InProp->SetObjectPropertyValue(ValuePtr, Traversal.ValueObjectAssoc[CefMap.get()]);
+		inProp->SetObjectPropertyValue(valuePtr, traversal.ValueObjectAssoc[cefMap.get()]);
 		return;
 	}
 
 	// If there's no object allocated yet in target property, create one
-	if(!Obj->IsValidLowLevel())
+	if(!obj->IsValidLowLevel())
 	{
 		// TODO: Take care of inheritance problems
 		// This is limited to non-abstract classes and can only work with the class known by the property
-		auto InClass = InProp->PropertyClass;
-		Obj = NewObject<UObject>(RootObj, InProp->PropertyClass);
-		Pins.With(Obj);
+		obj = NewObject<UObject>(rootObj, inProp->PropertyClass);
+		pins.With(obj);
 	}
 
-	Traversal.Add(Obj, CefMap);
+	traversal.Add(obj, cefMap);
 
 	// obviously only commonly present members will be regarded
 	for(
-		TPropertyValueIterator<FProperty> It(
-			Obj->GetClass(),
-			Obj,
+		TPropertyValueIterator<FProperty> it(
+			obj->GetClass(),
+			obj,
 			EPropertyValueIteratorFlags::NoRecursion,
 			EFieldIteratorFlags::ExcludeDeprecated
 		);
-		It; ++It
+		it; ++it
 	) {
-		auto Prop = It.Key();
+		FProperty* prop = it.Key();
 		
 		// removing constness in the hope that modifying the value ptr will not cause issues
 		// just like everywhere else regarding working with property values
-		auto Val = const_cast<void*>(It.Value());
+		void* val = const_cast<void*>(it.Value());
 		
-		if(CefMap->HasKey(*Prop->GetName()))
+		if(cefMap->HasKey(*prop->GetName()))
 		{
-			auto InVal = CefMap->GetValue(*Prop->GetName());
-			CefValueToField(Prop, Val, InVal, Traversal, Pins, RootObj);
+			auto inVal = cefMap->GetValue(*prop->GetName());
+			CefValueToField(prop, val, inVal, traversal, pins, rootObj);
 		}
 	}
 }
 
 void FCefJsObjectSerializer::StructPropertyToCefValue(
-	CefRefPtr<CefValue> Target,
-	FStructProperty* InProp,
-	const void* ValuePtr,
-	FObjectTraversalState& Traversal
+	CefRefPtr<CefValue> target,
+	FStructProperty* inProp,
+	const void* valuePtr,
+	FObjectTraversalState& traversal
 ) {
-	auto ObjStruct = InProp->Struct;
+	UScriptStruct* objStruct = inProp->Struct;
 	
-	auto CefMap = CefDictionaryValue::Create();
+	auto cefMap = CefDictionaryValue::Create();
 	
 	for(
-		TPropertyValueIterator<FProperty> It(
-			ObjStruct,
-			ValuePtr,
+		TPropertyValueIterator<FProperty> it(
+			objStruct,
+			valuePtr,
 			EPropertyValueIteratorFlags::NoRecursion,
 			EFieldIteratorFlags::ExcludeDeprecated
 		);
-		It; ++It
+		it; ++it
 	) {
-		auto Prop = It.Key();
-		auto Val = It.Value();
-		CefMap->SetValue(*Prop->GetName(), FieldToCefValue(Prop, Val, Traversal));
+		FProperty* prop = it.Key();
+		const void* val = it.Value();
+		cefMap->SetValue(*prop->GetName(), FieldToCefValue(prop, val, traversal));
 	}
 	
-	Target->SetDictionary(CefMap);
+	target->SetDictionary(cefMap);
 }
 
 void FCefJsObjectSerializer::CefValueToStructProperty(
-	FStructProperty* InProp,
-	void* ValuePtr,
-	CefRefPtr<CefValue> Input,
-	FObjectTraversalState& Traversal,
-	FPinObjects& Pins,
-	UObject* RootObj
+	FStructProperty* inProp,
+	void* valuePtr,
+	CefRefPtr<CefValue> input,
+	FObjectTraversalState& traversal,
+	FPinObjects& pins,
+	UObject* rootObj
 ) {
-	if(!ValuePtr || !InProp->IsValidLowLevel())
+	if(!valuePtr || !inProp->IsValidLowLevel())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Object value destination or field was nullptr"));
 		return;
 	}
-	auto CefMap = Input->GetDictionary();
+	auto cefMap = input->GetDictionary();
 
 	// If input CEF Value is not a dictionary then we'll ignore this sctruct
-	if(!CefMap)
+	if(!cefMap)
 	{
 		// TODO: set default value instead of ignoring
 		return;
@@ -445,211 +462,218 @@ void FCefJsObjectSerializer::CefValueToStructProperty(
 
 	// obviously only commonly present members will be regarded
 	for(
-		TPropertyValueIterator<FProperty> It(
-			InProp->Struct,
-			ValuePtr,
+		TPropertyValueIterator<FProperty> it(
+			inProp->Struct,
+			valuePtr,
 			EPropertyValueIteratorFlags::NoRecursion,
 			EFieldIteratorFlags::ExcludeDeprecated
 		);
-		It; ++It
+		it; ++it
 	) {
-		auto Prop = It.Key();
+		FProperty* prop = it.Key();
 		
 		// removing constness in the hope that modifying the value ptr will not cause issues
 		// just like everywhere else regarding working with property values
-		auto Val = const_cast<void*>(It.Value());
+		void* val = const_cast<void*>(it.Value());
 		
-		if(CefMap->HasKey(*Prop->GetName()))
+		if(cefMap->HasKey(*prop->GetName()))
 		{
-			auto InVal = CefMap->GetValue(*Prop->GetName());
-			CefValueToField(Prop, Val, InVal, Traversal, Pins, RootObj);
+			auto inVal = cefMap->GetValue(*prop->GetName());
+			CefValueToField(prop, val, inVal, traversal, pins, rootObj);
 		}
 	}
 }
 
 void FCefJsObjectSerializer::MapPropertyToCefValue(
-	CefRefPtr<CefValue> Target,
-	FMapProperty* InProp,
-	const void* ValuePtr,
-	FObjectTraversalState& Traversal
+	CefRefPtr<CefValue> target,
+	FMapProperty* inProp,
+	const void* valuePtr,
+	FObjectTraversalState& traversal
 ) {
-	if(!IsStringOrEnumProperty(InProp->KeyProp)) {
+	if(!IsStringOrEnumProperty(inProp->KeyProp))
+	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Only String, Name, Text or Enum keys are supported in Maps."));
-		Target->SetNull();
+		target->SetNull();
 		return;
 	}
 	
-	auto CefMap = CefDictionaryValue::Create();
-	const FScriptMap& InMap = InProp->GetPropertyValue(ValuePtr);
-	FScriptMapHelper MapHelper(InProp, ValuePtr);
+	auto cefMap = CefDictionaryValue::Create();
+	const FScriptMap& inMap = inProp->GetPropertyValue(valuePtr);
+	FScriptMapHelper mapHelper(inProp, valuePtr);
 	
-	for(int i=0; i<InMap.Num(); i++)
+	for(int i=0; i<inMap.Num(); i++)
 	{
-		uint8* Key = MapHelper.GetKeyPtr(i);
-		uint8* Value = MapHelper.GetValuePtr(i);
-		FString StrKey = GetValueOfStringProperty(InProp->KeyProp, Key);
-		CefMap->SetValue(*StrKey, FieldToCefValue(InProp->ValueProp, Value, Traversal));
+		uint8* key = mapHelper.GetKeyPtr(i);
+		uint8* value = mapHelper.GetValuePtr(i);
+		FString strKey = GetValueOfStringProperty(inProp->KeyProp, key);
+		cefMap->SetValue(*strKey, FieldToCefValue(inProp->ValueProp, value, traversal));
 	}
 	
-	Target->SetDictionary(CefMap);
+	target->SetDictionary(cefMap);
 }
 
 void FCefJsObjectSerializer::CefValueToMapProperty(
-	FMapProperty* InProp,
-	void* ValuePtr,
-	CefRefPtr<CefValue> Input,
-	FObjectTraversalState& Traversal,
-	FPinObjects& Pins,
-	UObject* RootObj
+	FMapProperty* inProp,
+	void* valuePtr,
+	CefRefPtr<CefValue> input,
+	FObjectTraversalState& traversal,
+	FPinObjects& pins,
+	UObject* rootObj
 ) {
-	if(!IsStringOrEnumProperty(InProp->KeyProp)) {
+	if(!IsStringOrEnumProperty(inProp->KeyProp))
+	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Only String, Name, Text or Enum keys are supported in Maps."));
 		return;
 	}
-	auto CefMap = Input->GetDictionary();
-	const FScriptMap& InMap = InProp->GetPropertyValue(ValuePtr);
-	FScriptMapHelper MapHelper(InProp, ValuePtr);
+	auto cefMap = input->GetDictionary();
+	FScriptMapHelper mapHelper(inProp, valuePtr);
 
 	// Destination map is cleared and built up again from scratch
 	// so we wouldn't need key comparison here (more elegant code when going through data)
-	MapHelper.EmptyValues();
+	mapHelper.EmptyValues();
 	
 	// If input CEF Value is not a dictionary then we'll ignore this map
-	if(!CefMap) return;
+	if(!cefMap)
+	{
+		return;
+	}
 	
 	CefDictionaryValue::KeyList keys;
-	CefMap->GetKeys(keys);
+	cefMap->GetKeys(keys);
 	for (auto const& k : keys)
 	{
-		int Index = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
-		uint8* Key = MapHelper.GetKeyPtr(Index);
-		uint8* Value = MapHelper.GetValuePtr(Index);
-		auto KeyStr = CefValue::Create();
-		KeyStr->SetString(k);
+		int index = mapHelper.AddDefaultValue_Invalid_NeedsRehash();
+		uint8* key = mapHelper.GetKeyPtr(index);
+		uint8* value = mapHelper.GetValuePtr(index);
+		auto keyStr = CefValue::Create();
+		keyStr->SetString(k);
 		
-		SetValueOfStringProperty(InProp->KeyProp, Key, KeyStr);
-		CefValueToField(InProp->ValueProp, Value, CefMap->GetValue(k), Traversal, Pins, RootObj);
+		SetValueOfStringProperty(inProp->KeyProp, key, keyStr);
+		CefValueToField(inProp->ValueProp, value, cefMap->GetValue(k), traversal, pins, rootObj);
 		
-		MapHelper.Rehash();
+		mapHelper.Rehash();
 	}
 }
 
 void FCefJsObjectSerializer::SetPropertyToCefValue(
-	CefRefPtr<CefValue> Target,
-	FSetProperty* InProp,
-	const void* ValuePtr,
-	FObjectTraversalState& Traversal
+	CefRefPtr<CefValue> target,
+	FSetProperty* inProp,
+	const void* valuePtr,
+	FObjectTraversalState& traversal
 ) {
-	auto CefList = CefListValue::Create();
-	const FScriptSet InSet = InProp->GetPropertyValue(ValuePtr);
-	FScriptSetHelper SetHelper(InProp, ValuePtr);
+	auto cefList = CefListValue::Create();
+	const FScriptSet inSet = inProp->GetPropertyValue(valuePtr);
+	FScriptSetHelper setHelper(inProp, valuePtr);
 	
-	CefList->SetSize(InSet.Num());
+	cefList->SetSize(inSet.Num());
 
-	for(int i=0; i<InSet.Num(); i++)
+	for(int i=0; i<inSet.Num(); i++)
 	{
-		auto Val = SetHelper.GetElementPtr(i);
-		CefList->SetValue(i, FieldToCefValue(InProp->ElementProp, Val, Traversal));
+		uint8* val = setHelper.GetElementPtr(i);
+		cefList->SetValue(i, FieldToCefValue(inProp->ElementProp, val, traversal));
 	}
-	Target->SetList(CefList);
+	target->SetList(cefList);
 }
 
 void FCefJsObjectSerializer::CefValueToSetProperty(
-	FSetProperty* InProp,
-	void* ValuePtr,
-	CefRefPtr<CefValue> Input,
-	FObjectTraversalState& Traversal,
-	FPinObjects& Pins,
-	UObject* RootObj
+	FSetProperty* inProp,
+	void* valuePtr,
+	CefRefPtr<CefValue> input,
+	FObjectTraversalState& traversal,
+	FPinObjects& pins,
+	UObject* rootObj
 ) {
-	auto CefList = Input->GetList();
-	const FScriptSet InSet = InProp->GetPropertyValue(ValuePtr);
-	FScriptSetHelper SetHelper(InProp, ValuePtr);
+	auto cefList = input->GetList();
+	const FScriptSet inSet = inProp->GetPropertyValue(valuePtr);
+	FScriptSetHelper setHelper(inProp, valuePtr);
 
 	// Destination set is cleared and built up again from scratch
 	// so we wouldn't need element comparison here (more elegant code when going through data)
-	SetHelper.EmptyElements();
+	setHelper.EmptyElements();
 
 	// If input CEF Value is not a list then we'll ignore this set
-	if(!CefList) return;
-
-	for(int i=0; i<CefList->GetSize(); i++)
+	if(!cefList)
 	{
-		int Index = SetHelper.AddDefaultValue_Invalid_NeedsRehash();
-		uint8* Value = SetHelper.GetElementPtr(Index);
-		CefValueToField(InProp->ElementProp, Value, CefList->GetValue(i), Traversal, Pins, RootObj);
+		return;
+	}
 
-		SetHelper.Rehash();
+	for(int i=0; i<cefList->GetSize(); i++)
+	{
+		int index = setHelper.AddDefaultValue_Invalid_NeedsRehash();
+		uint8* value = setHelper.GetElementPtr(index);
+		CefValueToField(inProp->ElementProp, value, cefList->GetValue(i), traversal, pins, rootObj);
+
+		setHelper.Rehash();
 	}
 }
 
 void FCefJsObjectSerializer::ArrayPropertyToCefValue(
-	CefRefPtr<CefValue> Target,
-	FArrayProperty* InProp,
-	const void* ValuePtr,
-	FObjectTraversalState& Traversal
+	CefRefPtr<CefValue> target,
+	FArrayProperty* inProp,
+	const void* valuePtr,
+	FObjectTraversalState& traversal
 ) {
-	const FScriptArray InArray = InProp->GetPropertyValue(ValuePtr);
-	FScriptArrayHelper ArrayHelper(InProp, ValuePtr);
+	const FScriptArray inArray = inProp->GetPropertyValue(valuePtr);
+	FScriptArrayHelper arrayHelper(inProp, valuePtr);
 
 	// If it's an array of bytes just treat it as a binary value
-	if(InProp->Inner->IsA<FByteProperty>())
+	if(inProp->Inner->IsA<FByteProperty>())
 	{
-		auto CefBin = CefBinaryValue::Create(ArrayHelper.GetRawPtr(), InArray.Num());
-		Target->SetBinary(CefBin);
+		auto cefBin = CefBinaryValue::Create(arrayHelper.GetRawPtr(), inArray.Num());
+		target->SetBinary(cefBin);
 		return;
 	}
    
-	auto CefList = CefListValue::Create(); 
-	CefList->SetSize(InArray.Num());
+	auto cefList = CefListValue::Create(); 
+	cefList->SetSize(inArray.Num());
 
-	for(int i=0; i<InArray.Num(); i++)
+	for(int i=0; i<inArray.Num(); i++)
 	{
-		auto Val = ArrayHelper.GetRawPtr(i);
-		CefList->SetValue(i, FieldToCefValue(InProp->Inner, Val, Traversal));
+		uint8* val = arrayHelper.GetRawPtr(i);
+		cefList->SetValue(i, FieldToCefValue(inProp->Inner, val, traversal));
 	}
-	Target->SetList(CefList);
+	target->SetList(cefList);
 }
 
 void FCefJsObjectSerializer::CefValueToArrayProperty(
-	FArrayProperty* InProp,
-	void* ValuePtr,
-	CefRefPtr<CefValue> Input,
-	FObjectTraversalState& Traversal,
-	FPinObjects& Pins,
-	UObject* RootObj
+	FArrayProperty* inProp,
+	void* valuePtr,
+	CefRefPtr<CefValue> input,
+	FObjectTraversalState& traversal,
+	FPinObjects& pins,
+	UObject* rootObj
 ) {
-	const FScriptArray InArray = InProp->GetPropertyValue(ValuePtr);
-	FScriptArrayHelper ArrayHelper(InProp, ValuePtr);
+	const FScriptArray inArray = inProp->GetPropertyValue(valuePtr);
+	FScriptArrayHelper arrayHelper(inProp, valuePtr);
 	
 	// If it's an array of bytes just treat it as a binary value
-	if(InProp->Inner->IsA<FByteProperty>())
+	if(inProp->Inner->IsA<FByteProperty>())
 	{
-		auto CefBin = Input->GetBinary();
-		if(!CefBin)
+		auto cefBin = input->GetBinary();
+		if(!cefBin)
 		{
-			ArrayHelper.EmptyValues();
+			arrayHelper.EmptyValues();
 			return;
 		}
-		ArrayHelper.Resize(CefBin->GetSize());
-		CefBin->GetData(ArrayHelper.GetRawPtr(), CefBin->GetSize(), 0);
+		arrayHelper.Resize(cefBin->GetSize());
+		cefBin->GetData(arrayHelper.GetRawPtr(), cefBin->GetSize(), 0);
 		return;
 	}
 
-	auto CefList = Input->GetList();
+	auto cefList = input->GetList();
 
 	// If input CEF Value is not a list then we'll empty this array
-	if(!CefList)
+	if(!cefList)
 	{
-		ArrayHelper.EmptyValues();
+		arrayHelper.EmptyValues();
 		return;
 	}
 
-	ArrayHelper.Resize(CefList->GetSize());
+	arrayHelper.Resize(cefList->GetSize());
 
-	for(int i=0; i<CefList->GetSize(); i++)
+	for(int i=0; i<cefList->GetSize(); i++)
 	{
-		auto Val = ArrayHelper.GetRawPtr(i);
-		CefValueToField(InProp->Inner, Val, CefList->GetValue(i), Traversal, Pins, RootObj);
+		uint8* val = arrayHelper.GetRawPtr(i);
+		CefValueToField(inProp->Inner, val, cefList->GetValue(i), traversal, pins, rootObj);
 	}
 }

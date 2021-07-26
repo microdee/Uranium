@@ -119,14 +119,14 @@ struct FNewBrowserMetadata
 	FNewBrowserMetadata() {}
 
 	FNewBrowserMetadata(
-		const FString& TargetUrl,
-		const FString& TargetFrameName,
-		const EUrWindowDisposition TargetDisposition,
-		const FVector2D& DesiredSize
-	) : TargetUrl(TargetUrl)
-	  , TargetFrameName(TargetFrameName)
-	  , TargetDisposition(TargetDisposition)
-	  , DesiredSize(DesiredSize)
+		const FString& targetUrl,
+		const FString& targetFrameName,
+		const EUrWindowDisposition targetDisposition,
+		const FVector2D& desiredSize
+	) : TargetUrl(targetUrl)
+	  , TargetFrameName(targetFrameName)
+	  , TargetDisposition(targetDisposition)
+	  , DesiredSize(desiredSize)
 	{
 	}
 

@@ -46,6 +46,7 @@
 #pragma pop_macro("__GNUC__")
 #endif
 
+#include "Windows/HideWindowsPlatformAtomics.h"
 #include "Windows/HideWindowsPlatformTypes.h"
 THIRD_PARTY_INCLUDES_END
 

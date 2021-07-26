@@ -8,25 +8,22 @@
 #include "HAL/Event.h"
 #include "SharedTexture/SharedTextureInterface.h"
 
-CefRefPtr<FCefBrowserView> FCefBrowserView::CreateNew(
-	FVector2D initialSize,
-	FString url,
-	UUrBrowserView* wrapper)
+CefRefPtr<FCefBrowserView> FCefBrowserView::CreateNew(FVector2D initialSize, FString url, UUrBrowserView* wrapper)
 {
 	initialSize = FMath::Max(initialSize, FVector2D(128, 128));
 
-	CefWindowInfo WindowInfo;
-	WindowInfo.width = static_cast<int>(initialSize.X);
-	WindowInfo.height = static_cast<int>(initialSize.Y);
+	CefWindowInfo windowInfo;
+	windowInfo.width = static_cast<int>(initialSize.X);
+	windowInfo.height = static_cast<int>(initialSize.Y);
 
-	CefBrowserSettings brows;
-	SetCommonBrowserSettings(WindowInfo, brows);
+	CefBrowserSettings browser;
+	SetCommonBrowserSettings(windowInfo, browser);
 
 	CefRefPtr<FCefBrowserView> res(new FCefBrowserView());
 	res->vMainSize = initialSize;
 
 	if(CefBrowserHost::CreateBrowser(
-		WindowInfo, res, CefString(*url), brows,
+		windowInfo, res, CefString(*url), browser,
 #if UR_CHROM_COMPAT_EXTRAINFO()
 		nullptr,
 #endif
@@ -65,55 +62,55 @@ void FCefBrowserView::SetCommonBrowserSettings(CefWindowInfo& winInfo, CefBrowse
 	settings.windowless_frame_rate = 60;
 }
 
-void FCefBrowserView::ShowDevToolsWindow(FVector2D InspectElementAt)
+void FCefBrowserView::ShowDevToolsWindow(FVector2D inspectElementAt)
 {
-	CefWindowInfo WindowInfo;
-	WindowInfo.SetAsPopup(nullptr, "Uranium Developer Tools");
-	WindowInfo.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
-	WindowInfo.x = 0;
-	WindowInfo.y = 0;
-	WindowInfo.width = 640;
-	WindowInfo.height = 480;
+	CefWindowInfo windowInfo;
+	windowInfo.SetAsPopup(nullptr, "Uranium Developer Tools");
+	windowInfo.style = WS_VISIBLE | WS_OVERLAPPEDWINDOW;
+	windowInfo.x = 0;
+	windowInfo.y = 0;
+	windowInfo.width = 640;
+	windowInfo.height = 480;
 	BrowserHost->ShowDevTools(
-		WindowInfo,
+		windowInfo,
 		new FCefWindowedDevToolsClient,
 		CefBrowserSettings(),
 		{
-			FMath::FloorToInt(InspectElementAt.X),
-			FMath::FloorToInt(InspectElementAt.Y)
+			FMath::FloorToInt(inspectElementAt.X),
+			FMath::FloorToInt(inspectElementAt.Y)
 		}
 	);
 }
 
-void FCefBrowserView::ShowDevToolsEmbedded(FVector2D InspectElementAt, int width, int height)
+void FCefBrowserView::ShowDevToolsEmbedded(FVector2D inspectElementAt, int width, int height)
 {
-	CefWindowInfo WindowInfo;
-	CefBrowserSettings DtBrowserSettings;
-	SetCommonBrowserSettings(WindowInfo, DtBrowserSettings);
-	WindowInfo.width = width;
-	WindowInfo.height = height;
+	CefWindowInfo windowInfo;
+	CefBrowserSettings devToolBrowserSettings;
+	SetCommonBrowserSettings(windowInfo, devToolBrowserSettings);
+	windowInfo.width = width;
+	windowInfo.height = height;
 
-	CefRefPtr<FCefBrowserView> DevToolBrowser(new FCefBrowserView());
-	DevToolBrowser->vMainSize =
+	CefRefPtr<FCefBrowserView> devToolBrowser(new FCefBrowserView());
+	devToolBrowser->vMainSize =
 	{
 		static_cast<float>(width),
 		static_cast<float>(height)
 	};
 
 	BrowserHost->ShowDevTools(
-		WindowInfo,
-		DevToolBrowser,
-		DtBrowserSettings,
+		windowInfo,
+		devToolBrowser,
+		devToolBrowserSettings,
 		{
-			FMath::FloorToInt(InspectElementAt.X),
-			FMath::FloorToInt(InspectElementAt.Y)
+			FMath::FloorToInt(inspectElementAt.X),
+			FMath::FloorToInt(inspectElementAt.Y)
 		}
 	);
 
 	UUrBrowserView* newWindow = UUrBrowserView::CreateNew(UrWrapper.Get());
-	auto BrowserRef = NewObject<UCefBrowserManagedRef>(UrWrapper.Get());
-	BrowserRef->Obj = DevToolBrowser;
-	newWindow->DeferredInit(BrowserRef);
+	auto browserRef = NewObject<UCefBrowserManagedRef>(UrWrapper.Get());
+	browserRef->Obj = devToolBrowser;
+	newWindow->DeferredInit(browserRef);
 	UrWrapper->OnEmbeddedDevToolOpenedStatic.Broadcast(newWindow);
 	UrWrapper->OnEmbeddedDevToolOpened.Broadcast(newWindow);
 }
@@ -125,13 +122,21 @@ void FCefBrowserView::Close()
 
 bool FCefBrowserView::IsAllReady()
 {
-	if(!this) return false;
+	if(!this)
+	{
+		return false;
+	}
+	
 	return IsBrowserReady() && UrWrapper.IsValid();
 }
 
 bool FCefBrowserView::IsBrowserReady()
 {
-	if(!this) return false;
+	if(!this)
+	{
+		return false;
+	}
+	
 	return bInitialized && Browser && BrowserHost;
 }
 
@@ -141,11 +146,14 @@ bool FCefBrowserView::GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& 
 	return false;
 }
 
-bool FCefBrowserView::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info)
+bool FCefBrowserView::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screenInfo)
 {
 	if(UrWrapper.IsValid())
-		screen_info.device_scale_factor = UrWrapper->ScaleFactor;
-	screen_info.available_rect =
+	{
+		screenInfo.device_scale_factor = UrWrapper->ScaleFactor;
+	}
+	
+	screenInfo.available_rect =
 	{
 		0, 0,
 		static_cast<int>(vMainSize.X),
@@ -171,9 +179,12 @@ void FCefBrowserView::OnAcceleratedPaint(
 	CefRefPtr<CefBrowser> browser,
 	PaintElementType type,
 	const RectList& dirtyRects,
-	void* shared_handle)
-{
-	if (!UrWrapper.IsValid()) return;
+	void* shared_handle
+) {
+	if (!UrWrapper.IsValid())
+	{
+		return;
+	}
 
 	switch (type)
 	{
@@ -199,7 +210,11 @@ void FCefBrowserView::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
 {
 	AsyncTask(ENamedThreads::GameThread, [this, show]()
 	{
-		if (!UrWrapper.IsValid()) return;
+		if (!UrWrapper.IsValid())
+		{
+			return;
+		}
+		
 		UrWrapper->bPopupShown = show;
 		UrWrapper->OnNativePopupShowStatic.Broadcast(show);
 		UrWrapper->OnNativePopupShow.Broadcast(show);
@@ -210,7 +225,11 @@ void FCefBrowserView::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& 
 {
 	AsyncTask(ENamedThreads::GameThread, [this, rect]()
 	{
-		if (!UrWrapper.IsValid()) return;
+		if (!UrWrapper.IsValid())
+		{
+			return;
+		}
+		
 		UrWrapper->NativePopupPosition = FVector2D(rect.x, rect.y);
 		UrWrapper->NativePopupSize = FVector2D(rect.width, rect.height);
 		UrWrapper->OnNativePopupSizeStatic.Broadcast(
@@ -228,17 +247,21 @@ void FCefBrowserView::OnScrollOffsetChanged(CefRefPtr<CefBrowser> browser, doubl
 {
 }
 
-void FCefBrowserView::OnTextSelectionChanged(CefRefPtr<CefBrowser> browser, const CefString& selected_text, const CefRange& selected_range)
+void FCefBrowserView::OnTextSelectionChanged(CefRefPtr<CefBrowser> browser, const CefString& selectedText, const CefRange& selectedRange)
 {
 }
 
-void FCefBrowserView::OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode)
+void FCefBrowserView::OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode inputMode)
 {
-	AsyncTask(ENamedThreads::GameThread, [this, input_mode]()
+	AsyncTask(ENamedThreads::GameThread, [this, inputMode]()
 	{
-		if (!UrWrapper.IsValid()) return;
-		UrWrapper->OnVirtualKeyboardRequestedStatic.Broadcast(static_cast<EUrTextInputMode>(input_mode));
-		UrWrapper->OnVirtualKeyboardRequested.Broadcast(static_cast<EUrTextInputMode>(input_mode));
+		if (!UrWrapper.IsValid())
+		{
+			return;
+		}
+		
+		UrWrapper->OnVirtualKeyboardRequestedStatic.Broadcast(static_cast<EUrTextInputMode>(inputMode));
+		UrWrapper->OnVirtualKeyboardRequested.Broadcast(static_cast<EUrTextInputMode>(inputMode));
 	});
 }
 #pragma endregion CefRenderHandler
@@ -251,7 +274,10 @@ void FCefBrowserView::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 	Browser = browser;
 	BrowserHost = browser->GetHost();
 
-	if (!UrWrapper.IsValid()) return;
+	if (!UrWrapper.IsValid())
+	{
+		return;
+	}
 
 	AsyncTask(ENamedThreads::GameThread, [this]()
 	{
@@ -278,20 +304,23 @@ void FCefBrowserView::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 bool FCefBrowserView::OnBeforePopup(
 	CefRefPtr<CefBrowser> browser,
 	CefRefPtr<CefFrame> frame,
-	const CefString& target_url,
-	const CefString& target_frame_name,
-	CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-	bool user_gesture,
+	const CefString& targetUrl,
+	const CefString& targetFrameName,
+	CefLifeSpanHandler::WindowOpenDisposition targetDisposition,
+	bool userGesture,
 	const CefPopupFeatures& popupFeatures,
 	CefWindowInfo& windowInfo,
 	CefRefPtr<CefClient>& client,
 	CefBrowserSettings& settings,
 #if UR_CHROM_COMPAT_EXTRAINFO()
-	CefRefPtr<CefDictionaryValue>& extra_info,
+	CefRefPtr<CefDictionaryValue>& extraInfo,
 #endif
-	bool* no_javascript_access)
-{
-	if (!UrWrapper.IsValid()) return true;
+	bool* no_javascript_access
+) {
+	if (!UrWrapper.IsValid())
+	{
+		return true;
+	}
 
 	switch (UrWrapper->NewWindowBehavior)
 	{
@@ -300,12 +329,15 @@ bool FCefBrowserView::OnBeforePopup(
 		SetCommonBrowserSettings(windowInfo, settings);
 		AsyncTask(ENamedThreads::GameThread, [=]()
 		{
-			if(!UrWrapper.IsValid()) return;
+			if(!UrWrapper.IsValid())
+			{
+				return;
+			}
 
-			FNewBrowserMetadata Metadata(
-				FString(target_url.c_str()),
-				FString(target_frame_name.c_str()),
-				static_cast<EUrWindowDisposition>(target_disposition),
+			FNewBrowserMetadata metadata(
+				FString(targetUrl.c_str()),
+				FString(targetFrameName.c_str()),
+				static_cast<EUrWindowDisposition>(targetDisposition),
 				{
 					static_cast<float>(windowInfo.width),
 					static_cast<float>(windowInfo.height)
@@ -313,19 +345,19 @@ bool FCefBrowserView::OnBeforePopup(
 			);
 			
 			UUrBrowserView* newWindow = UUrBrowserView::CreateNew(UrWrapper.Get());
-			UrWrapper->OnNewWindowOpenedStatic.Broadcast(newWindow, Metadata);
-			UrWrapper->OnNewWindowOpened.Broadcast(newWindow, Metadata);
+			UrWrapper->OnNewWindowOpenedStatic.Broadcast(newWindow, metadata);
+			UrWrapper->OnNewWindowOpened.Broadcast(newWindow, metadata);
 		});
 		return false;
 	}
 	case EUrNewWindowBehavior::OpenInSameBrowser:
 	{
-		Browser->GetMainFrame()->LoadURL(target_url);
+		Browser->GetMainFrame()->LoadURL(targetUrl);
 		return true;
 	}
 	case EUrNewWindowBehavior::Suppress:
 	{
-		UE_LOG(LogUranium, Display, TEXT("Opening a new browser window has been suppressed (%s)"), target_url.c_str());
+		UE_LOG(LogUranium, Display, TEXT("Opening a new browser window has been suppressed (%s)"), targetUrl.c_str());
 		return true;
 	}
 	default: { return true; }
@@ -338,7 +370,10 @@ void FCefBrowserView::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFram
 {
 	AsyncTask(ENamedThreads::GameThread, [this, httpStatusCode]()
 	{
-		if(!UrWrapper.IsValid()) return;
+		if(!UrWrapper.IsValid())
+		{
+			return;
+		}
 
 		UrWrapper->bLoading = false;
 		UrWrapper->OnLoadEndStatic.Broadcast(httpStatusCode);
@@ -355,15 +390,23 @@ void FCefBrowserView::OnLoadError(
 {
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (UrWrapper.IsValid()) return;
+		if (UrWrapper.IsValid())
+		{
+			return;
+		}
+		
 		UrWrapper->OnLoadErrorStatic.Broadcast(FUrCefErrorCode(errorCode), FString(failedUrl.c_str()));
 		UrWrapper->OnLoadError.Broadcast(FUrCefErrorCode(errorCode), FString(failedUrl.c_str()));
 	});
 }
 
-void FCefBrowserView::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transition_type)
+void FCefBrowserView::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transitionType)
 {
-	if (!UrWrapper.IsValid()) return;
+	if (!UrWrapper.IsValid())
+	{
+		return;
+	}
+	
 	UrWrapper->bLoading = true;
 }
 
@@ -389,16 +432,16 @@ bool FCefBrowserView::OnBeforeBrowse(
 	CefRefPtr<CefBrowser> browser,
 	CefRefPtr<CefFrame> frame,
 	CefRefPtr<CefRequest> request,
-	bool user_gesture,
-	bool is_redirect)
-{
+	bool userGesture,
+	bool isRedirect
+) {
 	// TODO: url filter
 	return false;
 }
 
-void FCefBrowserView::OnPluginCrashed(CefRefPtr<CefBrowser> browser, const CefString& plugin_path)
+void FCefBrowserView::OnPluginCrashed(CefRefPtr<CefBrowser> browser, const CefString& pluginPath)
 {
-	UE_LOG(LogUranium, Display, TEXT("[CEF] Plugin crashed: %s"), plugin_path.c_str());
+	UE_LOG(LogUranium, Display, TEXT("[CEF] Plugin crashed: %s"), pluginPath.c_str());
 }
 
 void FCefBrowserView::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status)
@@ -414,11 +457,11 @@ CefRefPtr<CefResourceRequestHandler> FCefBrowserView::GetResourceRequestHandler(
 	CefRefPtr<CefBrowser> browser,
 	CefRefPtr<CefFrame> frame,
 	CefRefPtr<CefRequest> request,
-	bool is_navigation,
-	bool is_download,
-	const CefString& request_initiator,
-	bool& disable_default_handling)
-{
+	bool isNavigation,
+	bool isDownload,
+	const CefString& requestInitiator,
+	bool& disableDefaultHandling
+) {
 	// TODO implement custom html loading with CefResourceRequestHandlers and CefResourceHandlers
 	return nullptr;
 }
@@ -429,20 +472,28 @@ void FCefBrowserView::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 {
 	AsyncTask(ENamedThreads::GameThread, [this, url]()
 	{
-		if (!UrWrapper.IsValid()) return;
+		if (!UrWrapper.IsValid())
+		{
+			return;
+		}
+		
 		UrWrapper->OnAddressChangeStatic.Broadcast(FString(url.c_str()));
 		UrWrapper->OnAddressChange.Broadcast(FString(url.c_str()));
 	});
 }
 
-bool FCefBrowserView::OnAutoResize(CefRefPtr<CefBrowser> browser, const CefSize& new_size)
+bool FCefBrowserView::OnAutoResize(CefRefPtr<CefBrowser> browser, const CefSize& newSize)
 {
 	// TODO set with CefBrowserHost::SetAutoResizeEnabled and handle with SetMainSize
-	AsyncTask(ENamedThreads::GameThread, [this, new_size]()
+	AsyncTask(ENamedThreads::GameThread, [this, newSize]()
 	{
-		if (!UrWrapper.IsValid()) return;
-		UrWrapper->OnAutoResizeStatic.Broadcast(FVector2D(new_size.width, new_size.height));
-		UrWrapper->OnAutoResize.Broadcast(FVector2D(new_size.width, new_size.height));
+		if (!UrWrapper.IsValid())
+		{
+			return;
+		}
+		
+		UrWrapper->OnAutoResizeStatic.Broadcast(FVector2D(newSize.width, newSize.height));
+		UrWrapper->OnAutoResize.Broadcast(FVector2D(newSize.width, newSize.height));
 	});
 	return true;
 }
@@ -452,13 +503,17 @@ bool FCefBrowserView::OnConsoleMessage(
 	cef_log_severity_t level,
 	const CefString& message,
 	const CefString& source,
-	int line)
-{
+	int line
+) {
 	UE_LOG(LogUraniumConsole, Display, TEXT("(%s %i) %s"), source.c_str(), line, message.c_str());
 
 	AsyncTask(ENamedThreads::GameThread, [=]()
 	{
-		if (!UrWrapper.IsValid()) return;
+		if (!UrWrapper.IsValid())
+		{
+			return;
+		}
+		
 		UrWrapper->OnConsoleMessageStatic.Broadcast(
 			static_cast<EUrLogSeverity>(level), FString(message.c_str()), FString(source.c_str()), line
 		);
@@ -473,7 +528,11 @@ void FCefBrowserView::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool
 {
 	AsyncTask(ENamedThreads::GameThread, [this, fullscreen]()
 	{
-		if (!UrWrapper.IsValid()) return;
+		if (!UrWrapper.IsValid())
+		{
+			return;
+		}
+		
 		UrWrapper->OnFullscreenModeChangeStatic.Broadcast(fullscreen);
 		UrWrapper->OnFullscreenModeChange.Broadcast(fullscreen);
 	});
@@ -483,7 +542,11 @@ void FCefBrowserView::OnLoadingProgressChange(CefRefPtr<CefBrowser> browser, dou
 {
 	AsyncTask(ENamedThreads::GameThread, [this, progress]()
 	{
-		if (!UrWrapper.IsValid()) return;
+		if (!UrWrapper.IsValid())
+		{
+			return;
+		}
+		
 		UrWrapper->OnLoadingProgressChangeStatic.Broadcast(static_cast<float>(progress));
 		UrWrapper->OnLoadingProgressChange.Broadcast(static_cast<float>(progress));
 	});
@@ -499,21 +562,22 @@ void FCefBrowserView::OnBeforeContextMenu(
 	CefRefPtr<CefBrowser> browser,
 	CefRefPtr<CefFrame> frame,
 	CefRefPtr<CefContextMenuParams> params,
-	CefRefPtr<CefMenuModel> model)
-{
+	CefRefPtr<CefMenuModel> model
+) {
 	model->Clear();
 }
 
 bool FCefBrowserView::OnJSDialog(
 	CefRefPtr<CefBrowser> browser,
-	const CefString& origin_url,
-	JSDialogType dialog_type,
-	const CefString& message_text,
-	const CefString& default_prompt_text,
+	const CefString& originUrl,
+	JSDialogType dialogType,
+	const CefString& messageText,
+	const CefString& defaultPromptText,
 	CefRefPtr<CefJSDialogCallback> callback,
-	bool& suppress_message)
-{
-	suppress_message = true;
+	bool& suppressMessage
+) {
+	// TODO: handle javascript dialogs
+	suppressMessage = true;
 	return false;
 }
 
@@ -521,11 +585,12 @@ bool FCefBrowserView::OnFileDialog(
 	CefRefPtr<CefBrowser> browser, 
 	FileDialogMode mode, 
 	const CefString& title, 
-	const CefString& default_file_path,
-	const std::vector<CefString>& accept_filters,
-	int selected_accept_filter,
-	CefRefPtr<CefFileDialogCallback> callback)
-{
+	const CefString& defaultFilePath,
+	const std::vector<CefString>& acceptFilters,
+	int selectedAcceptFilter,
+	CefRefPtr<CefFileDialogCallback> callback
+) {
+	// TODO: handle file selection dialog
 	callback->Cancel();
 	return true;
 }

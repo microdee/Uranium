@@ -14,51 +14,69 @@ ID3D12Device* UD3D12SharedTexture::GetRhiDevice()
 	return static_cast<ID3D12Device*>(GDynamicRHI->RHIGetNativeDevice());
 }
 
-ID3D12CommandQueue* UD3D12SharedTexture::GetRhiCommandQueue(FRHICommandListImmediate& RHICmdList)
+ID3D12CommandQueue* UD3D12SharedTexture::GetRhiCommandQueue(FRHICommandListImmediate& cmdList)
 {
-	FD3D12CommandContext& CmdCtx = static_cast<FD3D12CommandContext&>(RHICmdList.GetContext());
-	return CmdCtx.CommandListHandle.GetCommandListManager()->GetD3DCommandQueue();
+	FD3D12CommandContext& cmdCtx = static_cast<FD3D12CommandContext&>(cmdList.GetContext());
+	return cmdCtx.CommandListHandle.GetCommandListManager()->GetD3DCommandQueue();
 }
 
-ID3D12GraphicsCommandList* UD3D12SharedTexture::GetRhiGfxCmdList(FRHICommandListImmediate& RHICmdList)
+ID3D12GraphicsCommandList* UD3D12SharedTexture::GetRhiGfxCmdList(FRHICommandListImmediate& cmdList)
 {
-	FD3D12CommandContext& CmdCtx = static_cast<FD3D12CommandContext&>(RHICmdList.GetContext());
-	return CmdCtx.CommandListHandle.GraphicsCommandList();
+	FD3D12CommandContext& cmdCtx = static_cast<FD3D12CommandContext&>(cmdList.GetContext());
+	return cmdCtx.CommandListHandle.GraphicsCommandList();
 }
 
 ID3D12Resource* UD3D12SharedTexture::GetTargetTextureResource()
 {
-	if (!TargetTexture) return nullptr;
+	if (!TargetTexture)
+	{
+		return nullptr;
+	}
 	
 #if UE_VERSION >= MAKE_UE_VERSION(4, 26)
 		
-	if (!TargetTexture->Resource) return nullptr;
+	if (!TargetTexture->Resource)
+	{
+		return nullptr;
+	}
 
-	auto RhiRes = TargetTexture->Resource->GetTexture2DRHI();
-	if (!RhiRes) return nullptr;
+	FRHITexture2D* rhiRes = TargetTexture->Resource->GetTexture2DRHI();
+	if (!rhiRes)
+	{
+		return nullptr;
+	}
 	
 #else
 
-	auto TargetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
-	if (!TargetRes) return nullptr;
+	auto targetRes = static_cast<FTexture2DResource*>(TargetTexture->Resource);
+	if (!targetRes)
+	{
+		return nullptr;
+	}
 
-	auto RhiRes = TargetRes->GetTexture2DRHI();
-	if (!RhiRes) return nullptr;
+	FRHITexture2D* rhiRes = targetRes->GetTexture2DRHI();
+	if (!rhiRes)
+	{
+		return nullptr;
+	}
 	
 #endif
 
-	return static_cast<ID3D12Resource*>(RhiRes->GetNativeResource());
+	return static_cast<ID3D12Resource*>(rhiRes->GetNativeResource());
 }
 
 bool UD3D12SharedTexture::CreateDD3D11On12TargetTexture()
 {
-	auto NativeRes = GetTargetTextureResource();
-	if (!NativeRes) return true;
+	ID3D12Resource* nativeRes = GetTargetTextureResource();
+	if (!nativeRes)
+	{
+		return true;
+	}
 
 	D3D11_RESOURCE_FLAGS d3d11Flags = { D3D11_BIND_SHADER_RESOURCE };
 
 	auto hr = D3D11On12Device->CreateWrappedResource(
-		static_cast<IUnknown*>(NativeRes),
+		nativeRes,
 		&d3d11Flags,
 		D3D12_RESOURCE_STATE_COPY_DEST,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
@@ -74,29 +92,37 @@ void UD3D12SharedTexture::Initialize()
 	ImGfxCtx = NewObject<UD3D11ImGfxCtx>();
 }
 
-void UD3D12SharedTexture::OnAcceleratedPaint(void* Handle)
+void UD3D12SharedTexture::OnAcceleratedPaint(void* handle)
 {
-	ImGfxCtx->OnAcceleratedPaint(Handle);
+	ImGfxCtx->OnAcceleratedPaint(handle);
 
-	if (PreviousHandle == Handle) return;
-	PreviousHandle = Handle;
+	if (PreviousHandle == handle)
+	{
+		return;
+	}
+	
+	PreviousHandle = handle;
 
-	auto UEFormat = FromDXGIFormat(ImGfxCtx->Format);
+	EPixelFormat ueFormat = FromDXGIFormat(ImGfxCtx->Format);
 
-	if (
-		Width != ImGfxCtx->Width
+	if (Width != ImGfxCtx->Width
 		|| Height != ImGfxCtx->Height
-		|| Format != UEFormat
-	) InvalidateUeResources(ImGfxCtx->Width, ImGfxCtx->Height, UEFormat);
+		|| Format != ueFormat
+	) {
+		InvalidateUeResources(ImGfxCtx->Width, ImGfxCtx->Height, ueFormat);
+	}
 }
 
 void UD3D12SharedTexture::Render()
 {
 	if (!TargetTexture->IsValidLowLevelFast()) return;
-	ENQUEUE_RENDER_COMMAND(void)([this](FRHICommandListImmediate& RHICmdList)
+	ENQUEUE_RENDER_COMMAND(void)([this](FRHICommandListImmediate& cmdList)
 	{
 		HRESULT hr;
-		if (bFailure) return;
+		if (bFailure)
+		{
+			return;
+		}
 
 		if (!bIsInitialized)
 		{
@@ -108,14 +134,14 @@ void UD3D12SharedTexture::Render()
 				D3D_FEATURE_LEVEL_10_0
 			};
 
-			auto CmdQueue = GetRhiCommandQueue(RHICmdList);
+			ID3D12CommandQueue* cmdQueue = GetRhiCommandQueue(cmdList);
 
 			hr = D3D11On12CreateDevice(
 				GetRhiDevice(),
 				0,
 				&FeatureLevels[0],
 				4,
-				reinterpret_cast<IUnknown**>(&CmdQueue),
+				reinterpret_cast<IUnknown**>(&cmdQueue),
 				1,
 				0,
 				&D3D11Device,
@@ -126,7 +152,7 @@ void UD3D12SharedTexture::Render()
 			HrFail_R(hr, TEXT("Couldn't create D3D11 on 12 device."));
 
 			hr = D3D11Device.As(&D3D11On12Device);
-			HrFail_R(hr, TEXT("Couldn't query D3D11 on 12 device from created D3D11 device."));
+			HrFail_R(hr, TEXT("Couldn't query D3D11on12 device from created D3D11 device."));
 		}
 		if (!D3D11On12TargetTexture)
 		{
@@ -138,30 +164,34 @@ void UD3D12SharedTexture::Render()
 			PrevImGfxCtxHandle = ImGfxCtx->TargetSharedHandle;
 			D3D11SharedTextureFromImGfxCtx.Reset();
 
-			ComPtr<ID3D11Resource> ImSharedResource;
-			hr = D3D11Device->OpenSharedResource(ImGfxCtx->TargetSharedHandle, IID_PPV_ARGS(&ImSharedResource));
+			ComPtr<ID3D11Resource> imSharedResource;
+			hr = D3D11Device->OpenSharedResource(ImGfxCtx->TargetSharedHandle, IID_PPV_ARGS(&imSharedResource));
 			HrFail_R(hr, TEXT("Failed to open the immediate shared resource in the RHI render thread."));
 
-			ImSharedResource.As(&D3D11SharedTextureFromImGfxCtx);
+			imSharedResource.As(&D3D11SharedTextureFromImGfxCtx);
 		}
 
-		ComPtr<ID3D11Resource> D3D11On12TargetResource;
-		if(!D3D11On12TargetTexture) return;
-		hr = D3D11On12TargetTexture.As(&D3D11On12TargetResource);
+		if(!D3D11On12TargetTexture)
+		{
+			return;
+		}
+		
+		ComPtr<ID3D11Resource> d3d11On12TargetResource;
+		hr = D3D11On12TargetTexture.As(&d3d11On12TargetResource);
 		HrFail_R(hr, TEXT("Couldn't query generic resource of target D3D11 on 12 wrapped texture."));
 
-		D3D11On12Device->AcquireWrappedResources(D3D11On12TargetResource.GetAddressOf(), 1);
-		D3D11Context->CopyResource(D3D11On12TargetResource.Get(), D3D11SharedTextureFromImGfxCtx.Get());
-		D3D11On12Device->ReleaseWrappedResources(D3D11On12TargetResource.GetAddressOf(), 1);
+		D3D11On12Device->AcquireWrappedResources(d3d11On12TargetResource.GetAddressOf(), 1);
+		D3D11Context->CopyResource(d3d11On12TargetResource.Get(), D3D11SharedTextureFromImGfxCtx.Get());
+		D3D11On12Device->ReleaseWrappedResources(d3d11On12TargetResource.GetAddressOf(), 1);
 		D3D11Context->Flush();
 		
 	});
 }
 
-void UD3D12SharedTexture::InvalidateUeResources(int InWidth, int InHeight, EPixelFormat InFormat)
+void UD3D12SharedTexture::InvalidateUeResources(int width, int height, EPixelFormat format)
 {
-	Width = InWidth; Height = InHeight; Format = InFormat;
-	TargetTexture = UTexture2D::CreateTransient(InWidth, InHeight, InFormat, TextureName);
+	Width = width; Height = height; Format = format;
+	TargetTexture = UTexture2D::CreateTransient(width, height, format, TextureName);
 	TargetTexture->UpdateResource();
 	D3D11On12TargetTexture.Reset();
 }

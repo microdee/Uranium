@@ -4,7 +4,18 @@
 
 #include "CoreMinimal.h"
 
+THIRD_PARTY_INCLUDES_START
+#include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/AllowWindowsPlatformAtomics.h"
+#include "Windows/PreWindowsApi.h"
+
 #include <dxgiformat.h>
+
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformAtomics.h"
+#include "Windows/HideWindowsPlatformTypes.h"
+THIRD_PARTY_INCLUDES_END
+
 
 #include "ImGfxCtxInterface.generated.h"
 
@@ -23,5 +34,5 @@ public:
 	int Height = -1;
 	DXGI_FORMAT Format = DXGI_FORMAT_UNKNOWN;
 	
-	virtual void OnAcceleratedPaint(void* Handle) { }
+	virtual void OnAcceleratedPaint(void* handle) { }
 };
