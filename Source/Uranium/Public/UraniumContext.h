@@ -1,106 +1,54 @@
-// MESO Digital Interiors GmbH. (C) 2020-
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "UraniumApp.h"
 
-#include "CefIncludesStart.h"
-
-#include "include/cef_app.h"
-#include "include/cef_browser.h"
-#include "include/cef_client.h"
-#include "include/cef_version.h"
-#include <thread>
-
-#include "CefIncludesEnd.h"
-
 #include "UraniumContext.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUraniumVoidDel);
-DECLARE_DYNAMIC_DELEGATE(FOnCefInitializedDel);
+class UUraniumSubsystem;
 
-class FEvent;
-
-/**
- * Context object for all functionalities usually handled in global scope
- * for regular CEF applications. In Uranium starting up and shutting down
- * the CEF backend designed to be controllable by the project.
- * 
- * The singleton pattern is used here making sure only one instance of
- * CEF is present any time during runtime.
- */
-class URANIUM_API FUraniumContext
-{
-private:
-
-	class FQuitTask : public CefTask
-	{
-	public:
-		FQuitTask() { }
-		void Execute() override {
-			CefQuitMessageLoop();
-		}
-
-		IMPLEMENT_REFCOUNTING(FQuitTask);
-	};
-
-	bool bIsCefRunning = false;
-	bool bIsCefInitializing = false;
-	bool bCefModulesLoaded = false;
-	int FrameRate = 60;
-	FString UserAgent;
-
-	TSharedPtr<std::thread, ESPMode::ThreadSafe> MessageLoopThread;
-	void MessageLoop();
-
-public:
-	static TSharedPtr<FUraniumContext> Singleton;
-	
-	CefRefPtr<FUraniumApp> App;
-
-	CefSettings GetCefSettings();
-
-	FString GetUserAgent();
-	void SetUserAgent(FString userAgent);
-
-	FString GetCefVersion() { return TEXT(CEF_VERSION); }
-	FString GetChromiumVersion();
-
-	void Initialize();
-	void Shutdown();
-	bool IsCefRunning();
-	FUraniumVoidDel OnCefInitialized;
-};
-
-URANIUM_API TSharedPtr<FUraniumContext> GetSingletonUraniumContext();
-
-UCLASS(BlueprintType)
-class URANIUM_API UUraniumContext : public UObject
+UINTERFACE()
+class URANIUM_API UUraniumContext : public UInterface
 {
 	GENERATED_BODY()
+};
+
+/**
+ * Base interface for Uranium contexts.
+ * An object implementing this interface is created in |UUraniumSubsystem|
+ * which will orchestrate global CEF resources.
+ */
+class URANIUM_API IUraniumContext
+{
+	GENERATED_BODY()
+
 public:
+	virtual CefRefPtr<FUraniumApp> GetApp() = 0;
+	virtual CefSettings GetCefSettings() = 0;
+	virtual FString GetUserAgent() = 0;
+	virtual void SetUserAgent(FString userAgent) = 0;
+	virtual FString GetChromiumVersion();
+	virtual FString GetCefVersion();
 
-	static void GlobalTick();
+	/** Return true when all is ready to work with CEF */
+	virtual bool IsCefRunning() = 0;
 
-	UFUNCTION(BlueprintCallable, Category = "Uranium", meta = (WorldContext="worldContext"))
-	static void InitializeUranium(FOnCefInitializedDel onInitialized, UObject* worldContext);
+	/** Return true while CEF is loading */
+	virtual bool IsInitializing() = 0;
 
-	//UFUNCTION(BlueprintCallable, Category = "Uranium")
-	static void ShutdownUranium();
+	/**
+	 * Implementer needs to check if it's safe to call and return early when it isn't.
+	 */
+	virtual void Initialize(UUraniumSubsystem* owner) = 0;
 
-	UFUNCTION(BlueprintPure, Category = "Uranium")
-	static FString GetUserAgent();
+	/**
+	* Implementer needs to check if it's safe to call and return early when it isn't.
+	*/
+	virtual void Deinitialize() = 0;
 
-	UFUNCTION(BlueprintCallable, Category = "Uranium")
-	static void SetUserAgent(FString userAgent);
-
-	UFUNCTION(BlueprintPure, Category = "Uranium")
-	static FString GetCefVersion();
-
-	UFUNCTION(BlueprintPure, Category = "Uranium")
-	static FString GetChromiumVersion();
-
-	UFUNCTION(BlueprintPure, Category = "Uranium")
-	static bool IsCefRunning();
+	FSimpleMulticastDelegate OnCefInitialized;
+	FSimpleMulticastDelegate OnCefShutdown;
 };
