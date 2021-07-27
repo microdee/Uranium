@@ -13,7 +13,8 @@ class UWidget;
 class SUrBrowser;
 
 /**
- * 
+ * This is the basic widget used to display native-popups.
+ * It's intended to be used only by |SUrBrowser| widget.
  */
 class URANIUM_API SUrPopup : public SCompoundWidget
 {

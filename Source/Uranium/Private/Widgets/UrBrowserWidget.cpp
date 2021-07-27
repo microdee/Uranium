@@ -3,7 +3,9 @@
 
 #include "Widgets/UrBrowserWidget.h"
 
+#include "Uranium.h"
 #include "UraniumContext.h"
+#include "UraniumSubsystem.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Engine/UserInterfaceSettings.h"
 #include "Widgets/SUrBrowser.h"
@@ -15,10 +17,16 @@ TSharedRef<SWidget> UUrBrowserWidget::RebuildWidget()
 {
 	SAssignNew(SlateBrowser, SUrBrowser)
 		.AssociatedBrowser_Lambda([this]() { return AssociatedBrowser; })
-		.UseOwnPopupWidget_Lambda([this]() { return !static_cast<bool>(NativePopupWidgetClass); })
+		.UseOwnPopupWidget_Lambda([this]()
+		{
+			return !IsNativePopupWidgetClassValid();
+		})
 		.DoDeferredInit(true)
 		.DoTick_Lambda([this]() { return DoTick; })
-		.AutoRemovePopup_Lambda([this]() { return ShouldAutoRemoveNativePopupWidget(); })
+		.AutoRemovePopup_Lambda([this]()
+		{
+			return !IsNativePopupWidgetClassValid();
+		})
 		.BrowserSizeMode_Lambda([this]() { return BrowserSizeMode; })
 		.ManualSize_Lambda([this]() { return ManualSize; })
 		.InitMetadata_Lambda([this]() { return InitMetadata; })
@@ -26,6 +34,11 @@ TSharedRef<SWidget> UUrBrowserWidget::RebuildWidget()
 		.ScaleFactor_Lambda([this]() { return GetViewportScale(); })
 		.PopupWidget_Lambda([this]() { return SlateGetPopupWidget(); })
 		.UseThumbMouseButtons_Lambda([this]() { return UseThumbMouseButtons; });
+
+	if(AutoInitialize && !IsDesignTime())
+	{
+		Initialize({});
+	}
 
 	return SlateBrowser.ToSharedRef();
 }
@@ -216,13 +229,22 @@ TSharedPtr<SWidget> UUrBrowserWidget::SlateGetPopupWidget()
 	return NativePopupWidgetCache->TakeWidget();
 }
 
-bool UUrBrowserWidget::ShouldAutoRemoveNativePopupWidget() const
+bool UUrBrowserWidget::IsNativePopupWidgetClassValid() const
 {
 	if (NativePopupWidgetClass)
 	{
-		return !NativePopupWidgetClass->ImplementsInterface(UUrNativePopupWidget::StaticClass());
+		bool popupClassValid = NativePopupWidgetClass->ImplementsInterface(UUrNativePopupWidget::StaticClass());
+		if(!popupClassValid)
+		{
+			UE_LOG(
+				LogUranium, Warning,
+				TEXT("Custom native-popup widget class is specified (%s), but it doesn't implement UrNativePopupWidget interface."),
+				*NativePopupWidgetClass->GetName()
+			);
+		}
+		return popupClassValid;
 	}
-	return true;
+	return false;
 }
 
 void UUrBrowserWidget::HandleNativePopupShow(bool show)
@@ -241,7 +263,7 @@ void UUrBrowserWidget::HandleNativePopupShow(bool show)
 	}
 	else
 	{
-		if(ShouldAutoRemoveNativePopupWidget())
+		if(IsNativePopupWidgetClassValid())
 		{
 			RemoveNativePopupWidget();
 		}

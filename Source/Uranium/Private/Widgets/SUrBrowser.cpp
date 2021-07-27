@@ -12,6 +12,16 @@
 #include "Widgets/Layout/SConstraintCanvas.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
+
+SUrBrowser::~SUrBrowser()
+{
+	if(PrevBrowser.IsValid())
+	{
+		PrevBrowser->OnNativePopupShowStatic.RemoveAll(this);
+		PrevBrowser->OnNativePopupSizeStatic.RemoveAll(this);
+	}
+}
+
 void SUrBrowser::Construct(const FArguments& args)
 {
 	PersistentArgs = args;
@@ -45,12 +55,7 @@ void SUrBrowser::Tick(const FGeometry& allottedGeometry, const double currentTim
 	auto assocBrowser = PersistentArgs._AssociatedBrowser.Get();
 	if(assocBrowser.IsValid() && assocBrowser->Instance)
 	{
-		if(PrevBrowser != assocBrowser.Get())
-		{
-			PrevBrowser = assocBrowser.Get();
-			assocBrowser->OnNativePopupShowStatic.AddRaw(this, &SUrBrowser::HandleOnPopupShow);
-			assocBrowser->OnNativePopupSizeStatic.AddRaw(this, &SUrBrowser::HandleOnPopupSize);
-		}
+		CheckBrowserChange(assocBrowser);
 
 		FVector2D localSize = GetSizeForBrowserContent(allottedGeometry);
 		FVector2D actualSize;
@@ -92,6 +97,7 @@ void SUrBrowser::Tick(const FGeometry& allottedGeometry, const double currentTim
 		//AssocBrows->ScaleFactor = FMath::Max(ScaleFactor.Get(), 1.0f);
 		//ActualSize *= AssocBrows->ScaleFactor;
 
+		// If requested initialize browser if it's not yet initialized
 		if (PersistentArgs._DoDeferredInit.Get() && !assocBrowser->Instance->Obj)
 		{
 			assocBrowser->DeferredInit(actualSize, PersistentArgs._InitMetadata.Get().TargetUrl);
@@ -217,7 +223,7 @@ FReply SUrBrowser::OnMouseButtonDown(const FGeometry& geometry, const FPointerEv
 		return FReply::Unhandled();
 	}
 	
-
+	// Navigating in history with the thumb mouse buttons, and not send them explicitly to the browser
 	if(PersistentArgs._UseThumbMouseButtons.Get())
 	{
 		if (mouseEvent.GetEffectingButton() == EKeys::ThumbMouseButton2)
@@ -430,7 +436,7 @@ void SUrBrowser::HandleOnPopupShow(bool show)
 	{
 		PopupWidgetPersistent = CreatePopupWidget();
 	}
-	else if(PersistentArgs._AutoRemovePopup.Get())
+	if (!show && PersistentArgs._AutoRemovePopup.Get())
 	{
 		RemovePopupWidget();
 	}
@@ -460,6 +466,21 @@ void SUrBrowser::HandleOnPopupSize(FVector2D location, FVector2D size)
 			. Offset(FMargin(0, 0, localSize.X, localSize.Y))
 			. ZOrder(1.0f)
 			[ PopupWidgetPersistent.ToSharedRef() ];
+	}
+}
+
+void SUrBrowser::CheckBrowserChange(TWeakObjectPtr<UUrBrowserView> assocBrowser)
+{
+	if(PrevBrowser.Get() != assocBrowser.Get())
+	{
+		if(PrevBrowser.IsValid())
+		{
+			PrevBrowser->OnNativePopupShowStatic.RemoveAll(this);
+			PrevBrowser->OnNativePopupSizeStatic.RemoveAll(this);
+		}
+		PrevBrowser = assocBrowser;
+		assocBrowser->OnNativePopupShowStatic.AddRaw(this, &SUrBrowser::HandleOnPopupShow);
+		assocBrowser->OnNativePopupSizeStatic.AddRaw(this, &SUrBrowser::HandleOnPopupSize);
 	}
 }
 

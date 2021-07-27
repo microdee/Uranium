@@ -61,6 +61,10 @@ public:
 
 	UUrBrowserWidget(const FObjectInitializer& oi);
 
+	/* When true, |Initialize| or |InitializeWithEvents| are not necessary to be called from Blueprint. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Browser")
+	bool AutoInitialize = true;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Appearance, meta = (sRGB = "true"))
 	FSlateColor ColorAndOpacity;
 
@@ -100,8 +104,6 @@ public:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Browser")
 	TSubclassOf<UUserWidget> NativePopupWidgetClass;
-
-	// TODO: Design time preview
 
 	/**
 	 * Initialize this browser widget from a UMG widget no earlier than the Construct event.
@@ -189,7 +191,7 @@ public:
 	/** Leave it empty if the same as Initial Url */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
 	FString PreviewWithUrl;
-	
+
 	virtual void SynchronizeProperties() override;
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 
@@ -209,7 +211,7 @@ protected:
 private:
 
 	TSharedPtr<SWidget> SlateGetPopupWidget();
-	bool ShouldAutoRemoveNativePopupWidget() const;
+	bool IsNativePopupWidgetClassValid() const;
 
 	UPROPERTY()
 	UUserWidget* NativePopupWidgetCache;
