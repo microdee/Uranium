@@ -161,6 +161,13 @@ void UUrBrowserWidget::SynchronizeProperties()
 
 void UUrBrowserWidget::ReleaseSlateResources(bool bReleaseChildren)
 {
+	if(NativePopupWidgetCache)
+	{
+		NativePopupWidgetCache->RemoveFromParent();
+		NativePopupWidgetCache = nullptr;
+	}
+	SlateBrowser.Reset();
+	
 	Super::ReleaseSlateResources(bReleaseChildren);
 }
 
