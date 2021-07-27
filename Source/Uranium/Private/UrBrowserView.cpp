@@ -5,6 +5,7 @@
 #include "CefBrowserView.h"
 #include "HardwareInfo.h"
 #include "UraniumContext.h"
+#include "UraniumSubsystem.h"
 #include "Uranium.h"
 #include "CefBrowserManagedRef.h"
 #include "SharedTexture/SharedTextureInterface.h"
@@ -50,7 +51,7 @@ void UUrBrowserView::AddChild(UUrBrowserView* child)
 
 UUrBrowserView* UUrBrowserView::CreateNew(UObject* worldContext)
 {
-	auto context = GetSingletonUraniumContext();
+	IUraniumContext* context = UUraniumSubsystem::GetContext();
 	if (!context->IsCefRunning())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("Uranium context is not running. Browser is not created"));
@@ -69,7 +70,7 @@ UUrBrowserView* UUrBrowserView::CreateNew(UObject* worldContext)
 
 UUrBrowserView* UUrBrowserView::CreateNewUraniumBrowser(UObject* worldContext, FOnBeforeCreatedDel onBeforeCreated, FOnAfterCreatedFuncDel onAfterCreated)
 {
-	auto context = GetSingletonUraniumContext();
+	IUraniumContext* context = UUraniumSubsystem::GetContext();
 	if (!context->IsCefRunning())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("Uranium context is not running. Browser is not created"));

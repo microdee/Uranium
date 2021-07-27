@@ -216,7 +216,4 @@ private:
 
 	UFUNCTION()
 	void HandleNativePopupShow(bool show);
-
-	UFUNCTION()
-	void HandlePreviewCefInit();
 };

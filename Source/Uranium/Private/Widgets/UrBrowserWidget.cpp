@@ -126,10 +126,15 @@ void UUrBrowserWidget::StartPreview()
 	{
 		return;
 	}
+	
+	InitMetadata = {};
+	InitMetadata.TargetUrl = PreviewWithUrl.IsEmpty() ? InitialUrl : PreviewWithUrl;
+	AssociatedBrowser = UUrBrowserView::CreateNew(this);
 
-	FOnCefInitializedDel onCefInit;
-	onCefInit.BindDynamic(this, &UUrBrowserWidget::HandlePreviewCefInit);
-	UUraniumContext::InitializeUranium(onCefInit, this);
+	checkf(AssociatedBrowser, TEXT("At this point there should be a valid Associated Browser, but there wasn't"));
+
+	AssociatedBrowser->OnNativePopupShowStatic.AddUObject(this, &UUrBrowserWidget::HandleNativePopupShow);
+	DoTick = true;
 }
 
 void UUrBrowserWidget::StopPreview()
@@ -239,18 +244,6 @@ void UUrBrowserWidget::HandleNativePopupShow(bool show)
 			IUrNativePopupWidget::Execute_OnRemoveRequested(NativePopupWidgetCache, this);
 		}
 	}
-}
-
-void UUrBrowserWidget::HandlePreviewCefInit()
-{
-	InitMetadata = {};
-	InitMetadata.TargetUrl = PreviewWithUrl.IsEmpty() ? InitialUrl : PreviewWithUrl;
-	AssociatedBrowser = UUrBrowserView::CreateNew(this);
-
-	ensureMsgf(AssociatedBrowser, TEXT("At this point there should be a valid Associated Browser, but there wasn't"));
-
-	AssociatedBrowser->OnNativePopupShowStatic.AddUObject(this, &UUrBrowserWidget::HandleNativePopupShow);
-	DoTick = true;
 }
 
 #undef LOCTEXT_NAMESPACE
