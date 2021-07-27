@@ -115,7 +115,11 @@ void UD3D12SharedTexture::OnAcceleratedPaint(void* handle)
 
 void UD3D12SharedTexture::Render()
 {
-	if (!TargetTexture->IsValidLowLevelFast()) return;
+	if (!TargetTexture || !TargetTexture->IsValidLowLevelFast())
+	{
+		return;
+	}
+	
 	ENQUEUE_RENDER_COMMAND(void)([this](FRHICommandListImmediate& cmdList)
 	{
 		HRESULT hr;

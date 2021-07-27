@@ -30,7 +30,7 @@ FPinObjects::FPinObjects(UObject* object)
 
 void FPinObjects::With(UObject* object)
 {
-	if(!object->IsValidLowLevel())
+	if(!object || !object->IsValidLowLevel())
 	{
 		return;
 	}
@@ -110,7 +110,7 @@ void FCefJsObjectSerializer::ToUObject(TWeakObjectPtr<UObject> target, CefRefPtr
 
 bool IsStringProperty(FField* field)
 {
-	if(!field->IsValidLowLevel())
+	if(!field || !field->IsValidLowLevel())
 	{
 		return false;
 	}
@@ -193,7 +193,7 @@ CefRefPtr<CefValue> FCefJsObjectSerializer::FieldToCefValue(
 	CefRefPtr<CefValue> target = CefValue::Create();
 	
 	// Field is valid?
-	if(!valuePtr || !field->IsValidLowLevel())
+	if(!valuePtr || !field || !field->IsValidLowLevel())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Value or field was nullptr"));
 		target->SetNull();
@@ -253,7 +253,7 @@ void FCefJsObjectSerializer::CefValueToField(
 	FPinObjects& pins,
 	UObject* rootObj
 ) {
-	if(!valuePtr || !field->IsValidLowLevel())
+	if(!valuePtr || !field || !field->IsValidLowLevel())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Value destination or field was nullptr"));
 		return;
@@ -313,7 +313,7 @@ void FCefJsObjectSerializer::ObjectPropertyToCefValue(
 	FObjectTraversalState& traversal
 ) {
 	UObject* obj = inProp->GetObjectPropertyValue(valuePtr);
-	if(!obj->IsValidLowLevel())
+	if(!obj || !obj->IsValidLowLevel())
 	{
 		target->SetNull();
 		return;
@@ -354,7 +354,7 @@ void FCefJsObjectSerializer::CefValueToObjectProperty(
 	FPinObjects& pins,
 	UObject* rootObj
 ) {
-	if(!valuePtr || !inProp->IsValidLowLevel())
+	if(!valuePtr || !inProp || !inProp->IsValidLowLevel())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Object value destination or field was nullptr"));
 		return;
@@ -377,7 +377,7 @@ void FCefJsObjectSerializer::CefValueToObjectProperty(
 	}
 
 	// If there's no object allocated yet in target property, create one
-	if(!obj->IsValidLowLevel())
+	if(!obj || !obj->IsValidLowLevel())
 	{
 		// TODO: Take care of inheritance problems
 		// This is limited to non-abstract classes and can only work with the class known by the property
@@ -446,7 +446,7 @@ void FCefJsObjectSerializer::CefValueToStructProperty(
 	FPinObjects& pins,
 	UObject* rootObj
 ) {
-	if(!valuePtr || !inProp->IsValidLowLevel())
+	if(!valuePtr || !inProp || !inProp->IsValidLowLevel())
 	{
 		UE_LOG(LogUranium, Warning, TEXT("[JS Interop] Object value destination or field was nullptr"));
 		return;

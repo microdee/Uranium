@@ -135,7 +135,7 @@ void UUrBrowserView::Close()
 	{
 		return;
 	}
-	if (!Instance->IsValidLowLevel())
+	if (!Instance || !Instance->IsValidLowLevel())
 	{
 		return;
 	}
@@ -246,13 +246,14 @@ int UUrBrowserView::GetIdentifier() const
 
 bool UUrBrowserView::IsSame(UUrBrowserView* other) const
 {
+	if(this == other) return true;
 	if (!this->IsValidLowLevelFast(false) && !other->IsValidLowLevelFast(false))
 	{
 		return true;
 	}
 	
-	if (!other->IsValidLowLevelFast(false)) return false;
-	if (!this->IsValidLowLevelFast(false)) return false;
+	if (!other || !other->IsValidLowLevelFast(false)) return false;
+	if (!this || !this->IsValidLowLevelFast(false)) return false;
 	if (!Instance->Obj && !other->Instance->Obj) return true;
 	if (!Instance->Obj && other->Instance->Obj) return false;
 	if (Instance->Obj && !other->Instance->Obj) return false;

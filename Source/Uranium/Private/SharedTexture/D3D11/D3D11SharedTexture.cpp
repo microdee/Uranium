@@ -45,7 +45,7 @@ void UD3D11SharedTexture::OnAcceleratedPaint(void* handle)
 
 void UD3D11SharedTexture::Render()
 {
-	if (!TargetTexture->IsValidLowLevelFast())
+	if (!TargetTexture || !TargetTexture->IsValidLowLevelFast())
 	{
 		return;
 	}

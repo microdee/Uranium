@@ -17,16 +17,10 @@ TSharedRef<SWidget> UUrBrowserWidget::RebuildWidget()
 {
 	SAssignNew(SlateBrowser, SUrBrowser)
 		.AssociatedBrowser_Lambda([this]() { return AssociatedBrowser; })
-		.UseOwnPopupWidget_Lambda([this]()
-		{
-			return !IsNativePopupWidgetClassValid();
-		})
+		.UseOwnPopupWidget_Lambda([this]() { return !IsNativePopupWidgetClassValid(); })
 		.DoDeferredInit(true)
 		.DoTick_Lambda([this]() { return DoTick; })
-		.AutoRemovePopup_Lambda([this]()
-		{
-			return !IsNativePopupWidgetClassValid();
-		})
+		.AutoRemovePopup_Lambda([this]() { return !IsNativePopupWidgetClassValid(); })
 		.BrowserSizeMode_Lambda([this]() { return BrowserSizeMode; })
 		.ManualSize_Lambda([this]() { return ManualSize; })
 		.InitMetadata_Lambda([this]() { return InitMetadata; })
