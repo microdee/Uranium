@@ -1,0 +1,25 @@
+From c97ab9817e79065db0c17854f2ec7d94cc722b1b Mon Sep 17 00:00:00 2001
+From: David Morasz <m@mcro.de>
+Date: Thu, 2 Sep 2021 17:15:01 +0200
+Subject: [PATCH] Windows Arm64 needed #pragma comment( lib, "Opengl32" ) in
+ CefClient
+
+---
+ tests/cefclient/browser/osr_renderer.cc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tests/cefclient/browser/osr_renderer.cc b/tests/cefclient/browser/osr_renderer.cc
+index 7a55c8fb9..be03d6217 100644
+--- a/tests/cefclient/browser/osr_renderer.cc
++++ b/tests/cefclient/browser/osr_renderer.cc
+@@ -5,6 +5,7 @@
+ #include "tests/cefclient/browser/osr_renderer.h"
+ 
+ #if defined(OS_WIN)
++#pragma comment( lib, "Opengl32" )
+ #include <gl/gl.h>
+ #elif defined(OS_MAC)
+ #include <OpenGL/gl.h>
+-- 
+2.31.1.windows.1
+

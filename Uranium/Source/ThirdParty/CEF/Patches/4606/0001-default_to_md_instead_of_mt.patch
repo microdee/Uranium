@@ -1,0 +1,74 @@
+From 45272a637bc4e03c21d3a58016e06be90a5c57eb Mon Sep 17 00:00:00 2001
+From: David Morasz <m@mcro.de>
+Date: Mon, 30 Aug 2021 12:25:34 +0200
+Subject: [PATCH] default_to_md_instead_of_mt
+
+---
+ patch/patch.cfg                               |  4 ++
+ .../patches/default_to_md_instead_of_mt.patch | 40 +++++++++++++++++++
+ 2 files changed, 44 insertions(+)
+ create mode 100644 patch/patches/default_to_md_instead_of_mt.patch
+
+diff --git a/patch/patch.cfg b/patch/patch.cfg
+index 9099c428c..45a986dc7 100644
+--- a/patch/patch.cfg
++++ b/patch/patch.cfg
+@@ -545,5 +545,9 @@ patches = [
+     # Linux: Fix ATK assertion error when generating ARM build config.
+     # https://bugs.chromium.org/p/chromium/issues/detail?id=1123214
+     'name': 'linux_atk_1123214',
++  },
++  {
++    # Default to /MD instead of /MT (so link CRT dynamically on Windows)
++    'name': 'default_to_md_instead_of_mt',
+   }
+ ]
+diff --git a/patch/patches/default_to_md_instead_of_mt.patch b/patch/patches/default_to_md_instead_of_mt.patch
+new file mode 100644
+index 000000000..ffaa839fc
+--- /dev/null
++++ b/patch/patches/default_to_md_instead_of_mt.patch
+@@ -0,0 +1,40 @@
++diff --git base/win/win_util.cc base/win/win_util.cc
++index 450c4ea3b1729..09d0c08df7159 100644
++--- base/win/win_util.cc
+++++ base/win/win_util.cc
++@@ -55,6 +55,8 @@
++ #include "base/win/shlwapi.h"
++ #include "base/win/windows_version.h"
++ 
+++#pragma comment( lib, "Propsys" )
+++
++ namespace base {
++ namespace win {
++ 
++diff --git base/win/wmi.cc base/win/wmi.cc
++index a05ad314f2b73..6f33045964066 100644
++--- base/win/wmi.cc
+++++ base/win/wmi.cc
++@@ -17,6 +17,8 @@
++ #include "base/win/scoped_bstr.h"
++ #include "base/win/scoped_variant.h"
++ 
+++#pragma comment( lib, "Wbemuuid" )
+++
++ using Microsoft::WRL::ComPtr;
++ 
++ namespace base {
++diff --git build/config/win/BUILD.gn build/config/win/BUILD.gn
++index c0758b654af8b..c1d8828fcf434 100644
++--- build/config/win/BUILD.gn
+++++ build/config/win/BUILD.gn
++@@ -456,7 +456,7 @@ config("default_crt") {
++       configs = [ ":dynamic_crt" ]
++     } else {
++       # Desktop Windows: static CRT.
++-      configs = [ ":static_crt" ]
+++      configs = [ ":dynamic_crt" ]
++     }
++   }
++ }
++ 
+-- 
+2.31.1.windows.1
+

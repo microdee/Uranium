@@ -1,0 +1,16 @@
+/******************** (C) Copyright 2021 realworld one GmbH & Co. KG All Rights Reserved. ********************/
+
+#include "{{ cpp_include_path }}/Ur{{ name }}Handler.h"
+
+#include "Handlers/UrHandlerEvents.h"
+
+UUr{{ name }}Events* ICef{{ name }}Handler::Get{{ name }}Events()
+{
+	return UUr{{ name }}Events::GetEvents(Ur{{ name }}Handler.ToScriptInterface());
+}
+
+UUr{{ name }}Events* UUr{{ name }}Events::GetEvents(TScriptInterface<IUr{{ name }}Handler> handler)
+{
+	auto subSys = GEngine->GetEngineSubsystem<UUrHandlerEvents>();
+	return Cast<UUr{{ name }}Events>(subSys->GetEvents(handler.GetObject(), StaticClass()));
+}

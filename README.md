@@ -1,6 +1,4 @@
-# WIP! UPLOAD IN PROGRESS!
-
-This project is currently in the process of open-sourcing and as such infrastructure around it (such as build automation) is still not ready yet. You can start experimenting but this is far from being an off-the-shelf solution yet.
+This project is currently being developed at realworld one and it's occasionally getting a backmerge as a squashed commit and removing multi-platform endeavors. At the moment it's development is on hold and we don't yet know when we will get back to it.
 
 <p align="center">
     <img src="Docs/ur_logo_atom_onlight_bgcircle.png"
@@ -24,16 +22,15 @@ This project is currently in the process of open-sourcing and as such infrastruc
   * Devtools can be also opened inside Unreal (for VR/AR apps)
 * **Versatile input support**
   * Inject keyboard/mouse/touch events with exposed API
+* **Composable handlers for fully modular extensibility**
+  * (C++ only yet)
 
-### WIP
+### Planned features
 
 * **Javascript interop**
   * Call arbitrary javascript code on the HTML content
   * Read or Manipulate any UObject or UStruct from Javascript
   * Callbacks on property changes.
-
-### Planned
-
 * **High level asset types using Uranium**
   * SVG assets (with animation) (+ Slate/UMG widget)
   * Lottie/BodyMovin assets (+ Slate/UMG widget)
@@ -69,7 +66,7 @@ TODO
 
 #### CEF distribution
 
-CEF distributables used by this plugin are not stored in a github repository, but they're stored on a self-hosted gitlab instance. [Link to CEF storage](https://lauch.10d.space/uranium/cef-storage)
+CEF distributables used by this plugin are stored here az 7z archives splitted into ~100 Mb volumes because of azure shenanigans with LFS.
 
 ## Test project (UraniumDeposit)
 
@@ -79,3 +76,4 @@ This plugin is being developed inside its [official test project (UraniumDeposit
 
 ## Credits
 * Originally started development at [MESO Digital Interiors GmbH.](https://meso.design)
+* Currently being developed at [realworld one](https://realworld-one.com)

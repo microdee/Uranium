@@ -1,0 +1,57 @@
+/******************** (C) Copyright 2021 realworld one GmbH & Co. KG All Rights Reserved. ********************/
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "UObject/Interface.h"
+#include "UObject/WeakInterfacePtr.h"
+#include "UrCefHandler.h"
+
+#include "CefIncludesStart.h"
+#include "include/cef_client.h"
+#include "CefIncludesEnd.h"
+
+#include "Ur{{ name }}Handler.generated.h"
+
+class IUr{{ name }}Handler;
+class UUr{{ name }}Events;
+
+/**
+ * 
+ */
+class {{ module.name | string.upcase }}_API ICef{{ name }}Handler : public Cef{{ name }}Handler 
+{
+	friend IUr{{ name }}Handler;
+protected:
+	UUr{{ name }}Events* Get{{ name }}Events();
+
+public:
+	TWeakInterfacePtr<IUr{{ name }}Handler> Ur{{ name }}Handler;
+};
+
+UINTERFACE()
+class {{ module.name | string.upcase }}_API UUr{{ name }}Handler : public UInterface
+{
+	GENERATED_BODY()
+};
+
+/**
+ * 
+ */
+class {{ module.name | string.upcase }}_API IUr{{ name }}Handler
+{
+	GENERATED_BODY()
+	friend ICef{{ name }}Handler;
+public:
+	CefRefPtr<ICef{{ name }}Handler> Cef{{ name }}Handler = nullptr;
+};
+
+UCLASS()
+class {{ module.name | string.upcase }}_API UUr{{ name }}Events : public UObject
+{
+	GENERATED_BODY()
+public:
+
+	UFUNCTION(BlueprintPure, Category="Uranium")
+	static UUr{{ name }}Events* GetEvents(TScriptInterface<IUr{{ name }}Handler> handler);
+};

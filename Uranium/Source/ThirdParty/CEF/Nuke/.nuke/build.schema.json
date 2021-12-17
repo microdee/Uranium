@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Build Schema",
+  "$ref": "#/definitions/build",
+  "definitions": {
+    "build": {
+      "type": "object",
+      "properties": {
+        "Architecture": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "arm64",
+              "x64"
+            ]
+          }
+        },
+        "AutomateGitPyUrl": {
+          "type": "string"
+        },
+        "CefWorkDir": {
+          "type": "string",
+          "description": "Specify the CEF working directory. It's C:\\code by default and it is recommended to work from there. It can be a symbolic link too accross hard-drives"
+        },
+        "Continue": {
+          "type": "boolean",
+          "description": "Indicates to continue a previously failed build attempt"
+        },
+        "DepotToolsUrl": {
+          "type": "string"
+        },
+        "FfmpegBranding": {
+          "type": "string"
+        },
+        "ForceBuild": {
+          "type": "boolean"
+        },
+        "ForceUpdate": {
+          "type": "boolean"
+        },
+        "Help": {
+          "type": "boolean",
+          "description": "Shows the help text for this build assembly"
+        },
+        "Host": {
+          "type": "string",
+          "description": "Host for execution. Default is 'automatic'",
+          "enum": [
+            "AppVeyor",
+            "AzurePipelines",
+            "Bamboo",
+            "Bitrise",
+            "GitHubActions",
+            "GitLab",
+            "Jenkins",
+            "SpaceAutomation",
+            "TeamCity",
+            "Terminal",
+            "TravisCI"
+          ]
+        },
+        "IsOfficialBuild": {
+          "type": "boolean"
+        },
+        "IsSandboxed": {
+          "type": "boolean"
+        },
+        "NoLogo": {
+          "type": "boolean",
+          "description": "Disables displaying the NUKE logo"
+        },
+        "Plan": {
+          "type": "boolean",
+          "description": "Shows the execution plan (HTML)"
+        },
+        "Profile": {
+          "type": "array",
+          "description": "Defines the profiles to load",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ProprietaryCodecs": {
+          "type": "boolean"
+        },
+        "Python2Path": {
+          "type": "string"
+        },
+        "RemoteRepo": {
+          "type": "string"
+        },
+        "Revision": {
+          "type": "integer"
+        },
+        "Root": {
+          "type": "string",
+          "description": "Root directory during build execution"
+        },
+        "Skip": {
+          "type": "array",
+          "description": "List of targets to be skipped. Empty list skips all dependencies",
+          "items": {
+            "type": "string",
+            "enum": [
+              "CreateProject",
+              "Empty",
+              "FetchAutomateGit",
+              "FetchDepotTools",
+              "MakeDistrib",
+              "NinjaBuild",
+              "Update"
+            ]
+          }
+        },
+        "Target": {
+          "type": "array",
+          "description": "List of targets to be invoked. Default is '{default_target}'",
+          "items": {
+            "type": "string",
+            "enum": [
+              "CreateProject",
+              "Empty",
+              "FetchAutomateGit",
+              "FetchDepotTools",
+              "MakeDistrib",
+              "NinjaBuild",
+              "Update"
+            ]
+          }
+        },
+        "Verbosity": {
+          "type": "string",
+          "description": "Logging verbosity during build execution. Default is 'Normal'",
+          "enum": [
+            "Minimal",
+            "Normal",
+            "Quiet",
+            "Verbose"
+          ]
+        },
+        "VsVersion": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

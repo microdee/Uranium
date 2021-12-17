@@ -1,0 +1,16 @@
+/******************** (C) Copyright 2021 realworld one GmbH & Co. KG All Rights Reserved. ********************/
+
+#include "{{ cpp_include_path }}//UrDefault{{ name }}Handler.h"
+
+void UUrDefault{{ name }}Handler::PostInitProperties()
+{
+	Super::PostInitProperties();
+	Cef{{ name }}Handler = new FCefDefault{{ name }}Handler();
+	Cef{{ name }}Handler->Ur{{ name }}Handler = TScriptInterface<IUr{{ name }}Handler>(this);
+}
+
+void UUrDefault{{ name }}HandlerStatics::CreateDefaultCef{{ name }}Handler(TScriptInterface<IUr{{ name }}Handler> handler)
+{
+	handler->Cef{{ name }}Handler = new FCefDefault{{ name }}Handler();
+	handler->Cef{{ name }}Handler->Ur{{ name }}Handler = handler;
+}
