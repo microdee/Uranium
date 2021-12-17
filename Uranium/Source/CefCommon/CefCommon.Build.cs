@@ -21,6 +21,11 @@ public class CefCommon : ModuleRules
 		var cefVersion = "85.0.4183.121.ST";
 		//var cefVersion = "85.0.4183.121.ST";
 		//var cefVersion = "73.0.3683.75.ST";
+		var cefConfig =
+			Target.Configuration == UnrealTargetConfiguration.Debug ?
+				// The debug binaries of 73.0.3683.75.ST are not working properly
+				// /*"Debug"*/ "Release" : "Release";
+				"Debug" : "Release";
 
 		var isSupportedPlatform = Target.Platform == UnrealTargetPlatform.Win64;
 
