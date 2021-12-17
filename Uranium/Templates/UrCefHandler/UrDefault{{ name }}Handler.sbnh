@@ -1,0 +1,35 @@
+/******************** (C) Copyright 2021 realworld one GmbH & Co. KG All Rights Reserved. ********************/
+
+#pragma once
+#include "Ur{{ name }}Handler.h"
+
+#include "UrDefault{{ name }}Handler.generated.h"
+
+class {{ module.name | string.upcase }}_API FCefDefault{{ name }}Handler : public ICef{{ name }}Handler
+{
+	friend class UUrDefault{{ name }}Handler;
+public:
+	
+	IMPLEMENT_REFCOUNTING(FCefDefault{{ name }}Handler);
+};
+
+UCLASS(BlueprintType, Blueprintable)
+class {{ module.name | string.upcase }}_API UUrDefault{{ name }}Handler
+	: public UObject
+	, public IUr{{ name }}Handler
+	, public IUrHandler
+{
+	GENERATED_BODY()
+public:
+	virtual void PostInitProperties() override;
+};
+
+UCLASS()
+class URANIUM_API UUrDefault{{ name }}HandlerStatics : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+public:
+
+	UFUNCTION(BlueprintCallable, Category="Uranium")
+	static void CreateDefaultCef{{ name }}Handler(TScriptInterface<IUr{{ name }}Handler> handler);
+};

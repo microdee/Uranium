@@ -1,0 +1,4 @@
+!Build.sln
+Nuke.Targets/bin
+Nuke.Targets/obj
+.nuke/temp
