@@ -1,4 +1,6 @@
-This project is currently being developed at realworld one and it's occasionally getting a backmerge as a squashed commit and removing multi-platform endeavors. At the moment it's development is on hold and we don't yet know when we will get back to it.
+# THIS REPOSITORY WILL BE DELETED ON 23.10.2024
+
+Uranium is at full-swing full-time development at a private repository, release date is still unknown, but it won't be free and open-source anymore. However it will be source available upon gaining access, or pure C++ code reviewable before purchase and will be free for non-commercial or educational projects.
 
 <p align="center">
     <img src="Docs/ur_logo_atom_onlight_bgcircle.png"
